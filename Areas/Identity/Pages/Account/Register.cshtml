@@ -1,0 +1,152 @@
+@page
+@model RegisterModel
+
+@{
+    Layout = "_BlankLayout";
+    ViewData["Title"] = "Register";
+}
+
+@section VendorStyles {
+    <link rel="stylesheet" href="~/vendor/libs/&#64;form-validation/umd/styles/index.min.css" />
+}
+
+@section VendorScripts {
+    <script src="~/vendor/libs/&#64;form-validation/umd/bundle/popular.min.js"></script>
+    <script src="~/vendor/libs/&#64;form-validation/umd/plugin-bootstrap5/index.min.js"></script>
+    <script src="~/vendor/libs/&#64;form-validation/umd/plugin-auto-focus/index.min.js"></script>
+}
+
+@section PageStyles {
+    <link rel="stylesheet" href="~/vendor/css/pages/page-auth.css">
+}
+
+@section PageScripts {
+    <script src="~/js/pages-auth.js"></script>
+
+    <script>
+        function togglePasswordVisibility(inputId, iconId) {
+            var passwordInput = document.getElementById(inputId);
+            var passwordIcon = document.getElementById(iconId);
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                passwordIcon.classList.remove("bx-hide");
+                passwordIcon.classList.add("bx-show");
+            } else {
+                passwordInput.type = "password";
+                passwordIcon.classList.remove("bx-show");
+                passwordIcon.classList.add("bx-hide");
+            }
+        }
+    </script>
+}
+@* ************** Content ************** *@
+
+<div class="authentication-wrapper authentication-cover">
+    <div class="authentication-inner row m-0">
+
+        <!-- /Left Text -->
+        <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center p-5">
+            <div class="w-100 d-flex justify-content-center">
+                <img src="~/img/illustrations/girl-with-laptop-light.png" class="img-fluid" alt="Login image" width="700" data-app-dark-img="illustrations/girl-with-laptop-dark.png" data-app-light-img="illustrations/girl-with-laptop-light.png">
+            </div>
+        </div>
+        <!-- /Left Text -->
+        <!-- Register -->
+        <div class="d-flex col-12 col-lg-5 col-xl-4 align-items-center authentication-bg p-sm-5 p-4">
+            <div class="w-px-400 mx-auto">
+
+                <div class="w-px-400 mx-auto text-center">
+                    <!-- Logo -->
+                    <div class="app-brand mb-5">
+                        <a href="/" class="app-brand-link gap-2">
+                            <span class="app-brand-logo demo d-block mx-auto"><img src="/img/branding/logo.png" alt="Natural Approach Logo" style="width: 250px; padding-left: 125px;"></span>
+                        </a>
+                    </div>
+                    <!-- Heading and other content -->
+                    <h4 class="mb-2">Welcome to Natural Approach! 👋</h4>
+                    <div class="divider my-4">
+                        <div class="divider-text">Create your account here 🚀</div>
+                    </div>
+                </div>
+
+                <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Name"></label>
+                        <input asp-for="Input.Name" class="form-control" aria-required="true" placeholder="John Doe" autofocus />
+                        <span asp-validation-for="Input.Name" class="text-danger"></span>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Email">Email</label>
+                        <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Password">Password</label>
+                        <div class="input-group input-group-merge">
+                            <input asp-for="Input.Password" id="passwordInput" class="form-control" autocomplete="new-password" aria-required="true" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" />
+                            <span class="input-group-text cursor-pointer" onclick="togglePasswordVisibility('passwordInput', 'passwordIcon')">
+                                <i id="passwordIcon" class="bx bx-hide"></i>
+                            </span>
+                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+                        <div class="input-group input-group-merge">
+                            <input asp-for="Input.ConfirmPassword" id="confirmPasswordInput" class="form-control" autocomplete="new-password" aria-required="true" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" />
+                            <span class="input-group-text cursor-pointer" onclick="togglePasswordVisibility('confirmPasswordInput', 'confirmPasswordIcon')">
+                                <i id="confirmPasswordIcon" class="bx bx-hide"></i>
+                            </span>
+                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Role"></label>
+
+                        <select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select" aria-required="true">
+                            <option disabled selected value="0"> Select Role...</option>
+                        </select>
+
+                        <span asp-validation-for="Input.Role" class="text-danger"></span>
+
+                    </div>
+
+                    <button id="registerSubmit" type="submit" class="btn btn-primary d-grid w-100">Sign Up</button>
+                </form>
+                <hr /><br />
+                <p class="text-center">
+                    <span>Already have an account?</span>
+                    <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">
+                        <span>Sign in instead</span>
+                    </a>
+                </p>
+
+                <div class="divider my-4">
+                    <div class="divider-text">or visit us here</div>
+                </div>
+
+                <div class="d-flex justify-content-center">
+                    <a href="https://www.facebook.com/milkshakebahrain/" *@ class="btn btn-icon btn-label-facebook me-3">
+                        <i class="tf-icons bx bxl-facebook"></i>
+                    </a>
+
+                    <a href="https://www.instagram.com/milkshakebh/" class="btn btn-icon btn-label-instagram me-3">
+                        <i class="tf-icons bx bxl-instagram"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- /Register -->
+    </div>
+</div>
+

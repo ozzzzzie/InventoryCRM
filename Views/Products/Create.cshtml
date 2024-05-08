@@ -1,0 +1,164 @@
+@model NAIMS.Models.Product
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+
+<a asp-action="Index" type="button" class="btn btn-dark">
+    <i class="tf-icons bx bx-arrow-back"></i> Back
+</a>
+<br />
+<br />
+<div class="col-xxl">
+    <div class="card mb-4">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">Add New Product </h5> <small class="text-muted float-end"></small>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row mb-3">
+                    <label  class="col-sm-2 col-form-label" for="basic-default-Barcode">Barcode</label>
+                    <div class="col-sm-10">
+                        <input asp-for="Barcode" type="text" class="form-control" id="basic-default-barcode" />
+                        <span asp-validation-for="Barcode" class="text-danger"></span>
+                        <input type="hidden" asp-for="Barcode" id="barcodeStatusHidden" />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label asp-for="Sku" class="col-sm-2 col-form-label" for="basic-default-sku">SKU</label>
+                    <div class="col-sm-10">
+                        <input asp-for="Sku" type="text" class="form-control" id="basic-default-sku"/>
+                        <span asp-validation-for="Sku" class="text-danger"></span>
+                        <input type="hidden" asp-for="Sku" id="skuStatusHidden" />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label asp-for="BrandId" class="col-sm-2 col-form-label" for="basic-default-brand">Brand</label>
+                    <div class="col-sm-10">
+                        <select class="form-select" asp-for="BrandId" class="form-control" asp-items="ViewBag.BrandId" id="exampleFormControlSelect1" aria-label="Default select example"></select>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label asp-for="Pname" class="col-sm-2 col-form-label" for="basic-default-pname">Name</label>
+                    <div class="col-sm-10">
+                        <input asp-for="Pname" type="text" class="form-control" id="basic-default-pname" />
+                        <span asp-validation-for="Pname" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label asp-for="Size" class="col-sm-2 col-form-label" for="basic-default-size">Size</label>
+                    <div class="col-sm-10">
+                        <input asp-for="Size" type="text" class="form-control" id="basic-default-size" />
+                        <span asp-validation-for="Size" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label asp-for="Pdescription" class="col-sm-2 col-form-label" for="basic-default-message">Description</label>
+                    <div class="col-sm-10">
+                        <textarea asp-for="Pdescription" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Pdescription" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label asp-for="Price" class="col-sm-2 col-form-label" for="basic-default-size">Price</label>
+                    <div class="col-sm-10">
+                        <input asp-for="Price" type="text" class="form-control" id="basic-default-size" />
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label asp-for="PriceVat" class="col-sm-2 col-form-label" for="basic-default-size">Price (VAT incl)</label>
+                    <div class="col-sm-10">
+                        <input asp-for="PriceVat" type="text" class="form-control" id="basic-default-size" />
+                        <span asp-validation-for="PriceVat" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label asp-for="LocalQty" class="col-sm-2 col-form-label" for="basic-default-size">Local Quantity</label>
+                    <div class="col-sm-10">
+                        <input asp-for="LocalQty" type="text" class="form-control" id="basic-default-size" oninput="updateLocalStatus(this.value)" />
+                        <span asp-validation-for="LocalQty" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label asp-for="LocalStatus" class="col-sm-2 col-form-label" for="basic-default-size">Local Status</label>
+                    <div class="col-sm-10">
+                        <input asp-for="LocalStatus" type="text" class="form-control" id="localStatusInput" disabled />
+                        <input type="hidden" asp-for="LocalStatus" id="localStatusHidden" />
+                        <span asp-validation-for="LocalStatus" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <script>
+                    function updateLocalStatus(localQty) {
+                        var localStatusInput = document.getElementById('localStatusInput');
+                        var localStatusHidden = document.getElementById('localStatusHidden');
+
+                        if (localQty == 0) {
+                            localStatusInput.value = 'pick up needed';
+                        } else if (localQty <= 24) {
+                            localStatusInput.value = 'low stock';
+                        } else {
+                            localStatusInput.value = 'in stock';
+                        }
+
+                        localStatusHidden.value = localStatusInput.value;
+                    }
+                </script>
+
+                <div class="row mb-3">
+                    <label asp-for="WarehouseQty" class="col-sm-2 col-form-label" for="basic-default-size">Warehouse Quantity</label>
+                    <div class="col-sm-10">
+                        <input asp-for="WarehouseQty" type="text" class="form-control" id="basic-default-size" oninput="updateWarehouseStatus(this.value)" />
+                        <span asp-validation-for="WarehouseQty" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label asp-for="WarehouseStatus" class="col-sm-2 col-form-label" for="basic-default-size">Local Status</label>
+                    <div class="col-sm-10">
+                        <input asp-for="WarehouseStatus" type="text" class="form-control" id="warehouseStatusInput" disabled />
+                        <input type="hidden" asp-for="WarehouseStatus" id="warehouseStatusHidden" />
+                        <span asp-validation-for="WarehouseStatus" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <script>
+                    function updateWarehouseStatus(warehouseQty) {
+                        var warehouseStatusInput = document.getElementById('warehouseStatusInput');
+                        var warehouseStatusHidden = document.getElementById('warehouseStatusHidden');
+
+                        if (warehouseQty == 0) {
+                            warehouseStatusInput.value = 'out of stock';
+                        } else if (warehouseQty <= 24) {
+                            warehouseStatusInput.value = 'low stock';
+                        } else {
+                            warehouseStatusInput.value = 'in stock';
+                        }
+
+                        warehouseStatusHidden.value = warehouseStatusInput.value;
+                    }
+                </script>
+
+                <div class="row justify-content-end">
+                    <div class="col-sm-10">
+                        <div class="form-group">
+                            <input type="submit" value="Create" class="btn btn-primary" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

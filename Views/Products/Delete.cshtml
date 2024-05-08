@@ -1,0 +1,141 @@
+@model NAIMS.Models.Product
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+
+<a asp-action="Index" type="button" class="btn btn-dark">
+    <i class="tf-icons bx bx-arrow-back"></i> Back
+</a>
+<br />
+<br />
+<div class="col-xxl">
+    <div class="card mb-4">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">Are you sure you want to delete this product? </h5> <small class="text-muted float-end">@Html.DisplayFor(model => model.Pname)</small>
+        </div>
+        <div class="card-body">
+                            <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-name">Barcode</label>
+                    <div class="col-sm-10">
+                        @Html.DisplayFor(model => model.Barcode)
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-name">SKU</label>
+                    <div class="col-sm-10">
+                        @Html.DisplayFor(model => model.Sku)
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-name">Name</label>
+                    <div class="col-sm-10">
+                        @Html.DisplayFor(model => model.Pname)
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-name">Brand</label>
+                    <div class="col-sm-10">
+                        @if (Model.BrandId == 1)
+                        {
+                            <text>milk_shake</text>
+                        }
+                        else if (Model.BrandId == 2)
+                        {
+                            <text>depot</text>
+                        }
+                        else if (Model.BrandId == 3)
+                        {
+                            <text>simply zen</text>
+                        }
+                        else
+                        {
+                            @Html.DisplayFor(model => model.BrandId)
+                        }
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-name">Size</label>
+                    <div class="col-sm-10">
+                        @Html.DisplayFor(model => model.Size)
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-name">Description</label>
+                    <div class="col-sm-10">
+                        @Html.DisplayFor(model => model.Pdescription)
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-name">Price</label>
+                    <div class="col-sm-10">
+                        @Html.DisplayFor(model => model.Price)
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-name">Price (VAT INCL)</label>
+                    <div class="col-sm-10">
+                        @Html.DisplayFor(model => model.PriceVat)
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-name">Local Quantity</label>
+                    <div class="col-sm-10">
+                        @Html.DisplayFor(model => model.LocalQty)
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-name">Local Status</label>
+                    <div class="col-sm-10">
+                        @if (Model.LocalStatus == "low stock")
+                        {
+                            <span class="badge rounded-pill bg-warning">@Html.DisplayFor(modelItem => Model.LocalStatus)</span>
+                        }
+                        else if (Model.LocalStatus == "pick up needed")
+                        {
+                            <span class="badge rounded-pill bg-danger">@Html.DisplayFor(modelItem => Model.LocalStatus)</span>
+                        }
+                        else if (Model.LocalStatus == "in stock")
+                        {
+                            <span class="badge rounded-pill bg-success">@Html.DisplayFor(modelItem => Model.LocalStatus)</span>
+                        }
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-name">Warehouse Quantity</label>
+                    <div class="col-sm-10">
+                        @Html.DisplayFor(model => model.WarehouseQty)
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-name">Warehouse Status</label>
+                    <div class="col-sm-10">
+                        @if (Model.WarehouseStatus == "low stock")
+                        {
+                            <span class="badge rounded-pill bg-warning">@Html.DisplayFor(modelItem => Model.WarehouseStatus)</span>
+                        }
+                        else if (Model.WarehouseStatus == "out of stock")
+                        {
+                            <span class="badge rounded-pill bg-danger">@Html.DisplayFor(modelItem => Model.WarehouseStatus)</span>
+                        }
+                        else if (Model.WarehouseStatus == "in stock")
+                        {
+                            <span class="badge rounded-pill bg-success">@Html.DisplayFor(modelItem => Model.WarehouseStatus)</span>
+                        }
+                    </div>
+                </div>
+                <div class="row justify-content-end">
+                    <div class="col-sm-10">
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="ProductId" />
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bx bx-trash me-1"></i>Delete
+                        </button>
+                    </form>
+                    </div>
+                </div>
+            
+        </div>
+    </div>
+</div>

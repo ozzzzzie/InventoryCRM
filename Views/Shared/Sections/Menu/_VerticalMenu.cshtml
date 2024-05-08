@@ -1,0 +1,149 @@
+@{
+    TempData.Keep();
+    string? currentPage = ViewContext.HttpContext.Request.Path;
+}
+
+<!-- Menu -->
+@* ! Do this simple *@
+<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+
+    @* ! Hide app brand if navbar-full *@
+    <div class='app-brand demo @((@ViewData["navbarFull"] != null && Convert.ToBoolean(@ViewData["navbarFull"])) ? "d-xl-none" : "")' style="display: flex; justify-content: center; align-items: center;">
+        <a asp-controller="Dashboards" asp-action="Index" class="app-brand-link">
+            <span class="app-brand-logo demo">
+                <img src="/img/branding/logo.png" alt="Natural Approach Logo" style="width: 60px">
+            </span>
+        </a>
+
+        <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
+            <i class="bx bx-chevron-left bx-sm align-middle"></i>
+        </a>
+    </div>
+
+    <div class="menu-inner-shadow"></div>
+
+    @* ! menu-items *@
+    <ul class="menu-inner py-1">
+        <li class='menu-item@(currentPage == "/" ? " active" : "")'>
+            <a asp-controller="Home" asp-action="Index" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-home-alt-2"></i>
+                <div data-i18n="Home">Dashboard</div>
+            </a>
+        </li>
+        </li>
+        <li class='menu-item@(currentPage == "/TEST" ? " active" : "")'>
+            <a asp-controller="Products" asp-action="Testing" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-band-aid"></i>
+                <div>TESTING</div>
+            </a>
+        </li>
+        <li class='menu-item@(currentPage == "/All" ? " active" : "")'>
+            <a asp-controller="Orders" asp-action="Index" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-shopping-bag"></i>
+                <div>Orders</div>
+            </a>
+        </li>
+        <li class='menu-item@(currentPage.StartsWith("/Contacts") ? " active open" : "")'>
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-analyse"></i>
+                <div>Contacts</div>
+            </a>
+            <ul class="menu-sub">
+
+                <li class='menu-item@(currentPage == "/All" ? " active" : "")'>
+                    <a asp-controller="Contacts" asp-action="Index" class="menu-link">
+                        <div>all</div>
+                    </a>
+                </li>
+                <li class='menu-item@(currentPage == "/Salons" ? " active" : "")'>
+                    <a asp-controller="Contacts" asp-action="Salons" class="menu-link">
+                        <div>salons</div>
+                    </a>
+                </li>
+                <li class='menu-item@(currentPage == "/Influencers" ? " active" : "")'>
+                    <a asp-controller="Contacts" asp-action="Influencers" class="menu-link">
+                        <div>influencers</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        </li>
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Inventory</span>
+        </li>
+        <li class='menu-item@(currentPage == "/Products" ? " active" : "")'>
+            <a asp-controller="Products" asp-action="Index" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-hard-hat"></i>
+                <div>All Inventory</div>
+            </a>
+        </li>
+
+        <li class='menu-item@(currentPage == "/Products/WarehouseInventory" ? " active" : "")'>
+            <a asp-controller="Products" asp-action="WarehouseInventory" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-box"></i>
+                <div>Warehouse Inventory</div>
+            </a>
+        </li>
+        <li class='menu-item@(currentPage == "/Products/LocalInventory" ? " active" : "")'>
+            <a asp-controller="Products" asp-action="LocalInventory" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-store"></i>
+                <div>Local Inventory</div>
+            </a>
+        </li>
+        <li class='menu-item@(currentPage == "/Products/StockReport" ? " active" : "")'>
+            <a asp-controller="Products" asp-action="StockReport" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-store"></i>
+                <div>Stock</div>
+            </a>
+        </li>
+        <!-- Apps & Pages -->
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">External Pages</span>
+        </li>
+        <!-- Apps -->
+        <li class='menu-item@(currentPage == "/Apps/Gmail" ? " active" : "")'>
+            <a href="https://mail.google.com/" target="_blank" class="menu-link">
+                <i class="menu-icon tf-icons bx bxl-gmail"></i>
+                <div>Gmail</div>
+            </a>
+        </li>
+        <li class='menu-item@(currentPage == "/Apps/Drive" ? " active" : "")'>
+            <a href="https://drive.google.com/" target="_blank" class="menu-link">
+                <i class="menu-icon tf-icons bx bxl-google"></i>
+                <div>Drive</div>
+            </a>
+        </li>
+        <li class='menu-item@(currentPage == "/Apps/Calendar" ? " active" : "")'>
+            <a href="https://calendar.google.com/" target="_blank" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-calendar"></i>
+                <div>Calendar</div>
+            </a>
+        </li>
+        <li class='menu-item@(currentPage == "/Apps/Docs" ? " active" : "")'>
+            <a href="https://docs.google.com/" target="_blank" class="menu-link">
+                <i class="menu-icon tf-icons bx bxs-file-doc"></i>
+                <div>Docs</div>
+            </a>
+        </li>
+        <li class='menu-item@(currentPage == "/Apps/Sheets" ? " active" : "")'>
+            <a href="https://sheets.google.com/" target="_blank" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-spreadsheet"></i>
+                <div>Sheets</div>
+                </a>
+        </li>
+        <!-- Legal -->
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Legal</span>
+        </li>
+        <!-- Items -->
+        <li class='menu-item@(currentPage == "/Home/Privacy" ? " active" : "")'>
+            <a asp-controller="Home" asp-action="Privacy" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-detail"></i>
+                <div>Privacy Statement</div>
+            </a>
+        </li>
+
+    </ul>
+
+</aside>
+<!-- / Menu -->

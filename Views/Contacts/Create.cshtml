@@ -1,0 +1,88 @@
+@model NAIMS.Models.Contact
+
+@{
+    ViewData["Title"] = "Add Contact";
+}
+
+
+<a asp-action="Index" type="button" class="btn btn-dark">
+    <i class="tf-icons bx bx-arrow-back"></i> Back
+</a>
+<br />
+<br />
+<div class="col-xxl">
+    <div class="card mb-4">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">Add New Contact </h5> <small class="text-muted float-end"></small>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-Cname">Name</label>
+                    <div class="col-sm-10">
+                        <input asp-for="Cname" type="text" class="form-control" id="basic-default-Cname" />
+                        <span asp-validation-for="Cname" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-Ctype">Type</label>
+                    <div class="col-sm-10">
+                        <select asp-for="Ctype" class="form-select" class="form-control" id="exampleFormControlSelect1" aria-label="Default select example">
+                            <option value="Influencer">Influencer</option>
+                            <option value="Salon">Salon</option>
+                        </select>
+                        <span asp-validation-for="Ctype" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-Caddress">Address</label>
+                    <div class="col-sm-10">
+                        <textarea asp-for="Caddress" class="form-control" rows="2"></textarea>
+
+                        <span asp-validation-for="Caddress" class="text-danger"></span>
+                    </div>
+                </div>
+
+@*                 <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-Email">Email</label>
+                    <div class="col-sm-10">
+                        <input asp-for="Email" type="text" class="form-control" id="basic-default-Email" placeholder="john.doe@example.com" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                </div>
+ *@
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-email">Email</label>
+                    <div class="col-sm-10">
+                        <div class="input-group input-group-merge">
+                            <input asp-for="Email" type="text" id="basic-default-email" class="form-control" placeholder="john.doe@example.com" aria-label="john.doe" aria-describedby="basic-default-email2" />
+                            <span asp-validation-for="Email" class="input-group-text" id="basic-default-email2"></span>
+                        </div>
+                        <div class="form-text"> You can use letters, numbers & periods </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-PhoneNumber">Phone Number</label>
+                    <div class="col-sm-10">
+                        <input asp-for="PhoneNumber" type="text" class="form-control" id="basic-default-PhoneNumber" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row justify-content-end">
+                    <div class="col-sm-10">
+                        <div class="form-group">
+                            <input type="submit" value="Create" class="btn btn-primary" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
