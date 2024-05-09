@@ -1,0 +1,78 @@
+@model List<NAIMS.Models.Product>
+
+@{
+
+    Layout = "_PrintLayout";
+
+    ViewData["Title"] = "Items to Pick Up Print";
+
+}
+
+<style>
+    .logo-container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    .logo {
+        max-width: 100px; 
+    }
+</style>
+
+<div class="logo-container">
+    <img src="/img/branding/logo.png" alt="Logo" class="logo">
+</div>
+<br />
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var currentDate = new Date();
+        var day = currentDate.getDate();
+        var monthIndex = currentDate.getMonth();
+        var year = currentDate.getFullYear();
+
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var formattedDate = day + ' ' + months[monthIndex] + ' ' + year;
+
+        document.getElementById('current-date').textContent = formattedDate;
+    });
+</script>
+
+<div>Date: <span id="current-date"></span></div>
+<br />
+@* Local out of stock *@
+<div class="col-md-6 col-xl-6">
+    <div class="card shadow-none border border-danger mb-3">
+        <div class="card-header bg-danger text-white">
+            <div class="d-flex justify-content-between">
+                <h5 class="card-title mb-0 text-white">Local</h5>
+                <small class="text-white">Products to be Picked Up</small>
+            </div>
+        </div>
+        <div class="card-body">
+            <p class="card-text">
+                <table class="table text-danger">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Size</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model)
+                        {
+                            if (product.LocalStatus == "pick up needed")
+                            {
+                                <tr>
+                                    <td>@product.Brand.Bname - @product.Pname</td>
+                                    <td>@product.Size</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </p>
+        </div>
+    </div>
+</div>
+

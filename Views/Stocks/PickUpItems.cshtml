@@ -1,0 +1,59 @@
+@model IEnumerable<NAIMS.Models.Product>
+
+@{
+    ViewData["Title"] = "Items for Pick Up";
+}
+
+@{
+    ViewData["Title"] = "Local Inventory Stock Report";
+    }
+
+<p align=right>
+    <button onclick="printDifferentPage()" class="btn btn-dark">Print</button>
+</p>
+
+@* Local out of stock *@
+<div class="col-md-6 col-xl-6">
+    <div class="card shadow-none border border-danger mb-3">
+        <div class="card-header bg-danger text-white">
+            <div class="d-flex justify-content-between">
+                <h5 class="card-title mb-0 text-white">Local</h5>
+                <small class="text-white">Products to be Picked Up</small>
+            </div>
+        </div>
+        <div class="card-body">
+            <p class="card-text">
+                <table class="table text-danger">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Size</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model)
+                        {
+                            if (product.LocalStatus == "pick up needed")
+                            {
+                                <tr>
+                                    <td>@product.Brand.Bname - @product.Pname</td>
+                                    <td>@product.Size</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function printDifferentPage() {
+        var newWindow = window.open('PickUpItemsPrint');
+        newWindow.onload = function () {
+            newWindow.print();
+        };
+    }
+</script>
+

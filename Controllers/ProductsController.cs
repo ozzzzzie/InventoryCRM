@@ -110,14 +110,6 @@ namespace NAIMS.Controllers
       return View(await products.AsNoTracking().ToListAsync());
     }
 
-    public async Task<IActionResult> StockReport()
-{
-    var products = await _context.Products
-        .Include(p => p.Brand)
-        .ToListAsync();
-
-    return View(products);
-}
     public async Task<IActionResult> LocalInventory(string sortOrder)
     {
 
@@ -267,6 +259,12 @@ namespace NAIMS.Controllers
       }
 
       return View(product);
+    }
+
+
+    public async Task<IActionResult> MoveItems()
+    {
+      return View();
     }
 
     // GET: Products1/Create

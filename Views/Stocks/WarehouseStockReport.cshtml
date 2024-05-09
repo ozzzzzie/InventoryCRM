@@ -1,0 +1,230 @@
+@model List<NAIMS.Models.Product>
+
+@{
+
+    ViewData["Title"] = "Warehouse Inventory Stock Report";
+
+    var totalItemCount = Model.Count;
+    var woutOfStockItemCount = Model.Count(p => p.WarehouseStatus == "out of stock");
+    var wlowStockItemCount = Model.Count(p => p.WarehouseStatus == "low stock");
+    var winStockItemCount = Model.Count(p => p.WarehouseStatus == "in stock");
+
+}
+
+
+
+<style>
+    .custom-badge-yellow {
+        background-color: #FFFFE0; /* custom yellow badge background for all items */
+    }
+
+        .custom-badge-yellow i {
+            color: #FFD700; /* custom yellow icon color for all items */
+        }
+
+    .custom-badge-red {
+        background-color: #FFC0CB; /* custom red badge background for all items */
+    }
+
+        .custom-badge-red i {
+            color: #FF0000; /* custom red icon color for all items */
+        }
+
+    .custom-badge-green {
+        background-color: #90EE90; /* custom green badge background for all items */
+    }
+
+        .custom-badge-green i {
+            color: #008000; /* custom green icon color for all items */
+        }
+
+    .custom-badge-orange {
+        background-color: #FFE4B5; /* custom orange badge background for all items */
+    }
+
+        .custom-badge-orange i {
+            color: #FF8C00; /* custom orange icon color for all items */
+        }
+</style>
+
+<a asp-controller="Products" asp-action="Warehouseinventory" type="button" class="btn btn-dark">
+    <i class="tf-icons bx bx-arrow-back"></i> Back
+</a>
+<p align=right>
+    <button onclick="printDifferentPage()" class="btn btn-dark">Print</button>
+</p>
+<br />
+
+@* Warehouse stock summary *@
+<div class="col-12">
+    <div class="card shadow-none border border-primary mb-3">
+        <div class="card-widget-separator-wrapper">
+            <div class="card-body card-widget-separator">
+                <h5 class="card-title">Warehouse Stock Summary</h5>
+                <div class="row gy-4 gy-sm-1">
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="d-flex justify-content-between align-items-start card-widget-1 border-end pb-3 pb-sm-0">
+                            <div>
+                                <h3 class="mb-1">@totalItemCount</h3>
+                                <p class="mb-0">Total Items</p>
+                            </div>
+                            <span class="badge rounded p-2 me-sm-4 custom-badge-yellow">
+                                <i class="bx bx-box bx-sm"></i>
+                            </span>
+                        </div>
+                        <hr class="d-none d-sm-block d-lg-none me-4">
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="d-flex justify-content-between align-items-start card-widget-2 border-end pb-3 pb-sm-0">
+                            <div>
+                                <h3 class="mb-1">@woutOfStockItemCount</h3>
+                                <p class="mb-0">Out of Stock</p>
+                            </div>
+                            <span class="badge rounded p-2 me-lg-4 custom-badge-red">
+                                <i class="bx bx-x-circle bx-sm custom-icon-red"></i>
+                            </span>
+                        </div>
+                        <hr class="d-none d-sm-block d-lg-none">
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="d-flex justify-content-between align-items-start border-end pb-3 pb-sm-0 card-widget-3">
+                            <div>
+                                <h3 class="mb-1">@wlowStockItemCount</h3>
+                                <p class="mb-0">Low Stock</p>
+                            </div>
+                            <span class="badge rounded p-2 me-sm-4 custom-badge-orange">
+                                <i class="bx bx-error-circle bx-sm custom-icon-orange"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h3 class="mb-1">@winStockItemCount</h3>
+                                <p class="mb-0">In Stock</p>
+                            </div>
+                            <span class="badge rounded p-2 custom-badge-green">
+                                <i class="bx bx-check-circle bx-sm custom-icon-green"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6 col-xl-6">
+        <div class="card shadow-none border border-danger mb-3">
+            <div class="card-header bg-danger text-white">
+                <div class="d-flex justify-content-between">
+                    <h5 class="card-title mb-0 text-white">Warehouse</h5>
+                    <small class="text-white">Out of Stock Products</small>
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Size</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in Model)
+                            {
+                                if (product.WarehouseStatus == "out of stock")
+                                {
+                                    <tr>
+                                        <td>@product.Brand.Bname - @product.Pname</td>
+                                        <td>@product.Size</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </p>
+            </div>
+        </div>
+        <div class="card shadow-none border border-warning mb-3">
+            <div class="card-header bg-warning text-white">
+                <div class="d-flex justify-content-between">
+                    <h5 class="card-title mb-0 text-white">Warehouse</h5>
+                    <small class="text-white">Low Stock Products</small>
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Size</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in Model)
+                            {
+                                if (product.WarehouseStatus == "low stock")
+                                {
+                                    <tr>
+                                        <td>@product.Brand.Bname - @product.Pname</td>
+                                        <td>@product.Size</td>
+                                        <td>@product.WarehouseQty</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-6">
+        <div class="card shadow-none border border-success mb-3">
+            <div class="card-header bg-success text-white">
+                <div class="d-flex justify-content-between">
+                    <h5 class="card-title mb-0 text-white">Warehouse</h5>
+                    <small class="text-white">In Stock Products</small>
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Size</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in Model)
+                            {
+                                if (product.WarehouseStatus == "in stock")
+                                {
+                                    <tr>
+                                        <td>@product.Brand.Bname - @product.Pname</td>
+                                        <td>@product.Size</td>
+                                        <td>@product.WarehouseQty</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function printDifferentPage() {
+        var newWindow = window.open('WarehouseStockReportPrint');
+        newWindow.onload = function () {
+            newWindow.print();
+        };
+    }
+</script>

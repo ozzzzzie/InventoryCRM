@@ -1,0 +1,253 @@
+@model List<NAIMS.Models.Product>
+
+@{
+    var totalItemCount = Model.Count;
+    var lPickUpCount = Model.Count(p => p.LocalStatus == "pick up needed");
+    var llowStockItemCount = Model.Count(p => p.LocalStatus == "low stock");
+    var linStockItemCount = Model.Count(p => p.LocalStatus == "in stock");
+
+    Layout = "_PrintLayout";
+    ViewData["Title"] = "Local Stock Report Print";
+
+}
+
+
+<style>
+    .logo-container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    .logo {
+        max-width: 100px; 
+    }
+
+    .custom-badge-yellow {
+        background-color: #FFFFE0; /* custom yellow badge background for all items */
+    }
+
+        .custom-badge-yellow i {
+            color: #FFD700; /* custom yellow icon color for all items */
+        }
+
+    .custom-badge-red {
+        background-color: #FFC0CB; /* custom red badge background for all items */
+    }
+
+        .custom-badge-red i {
+            color: #FF0000; /* custom red icon color for all items */
+        }
+
+    .custom-badge-green {
+        background-color: #90EE90; /* custom green badge background for all items */
+    }
+
+        .custom-badge-green i {
+            color: #008000; /* custom green icon color for all items */
+        }
+
+    .custom-badge-orange {
+        background-color: #FFE4B5; /* custom orange badge background for all items */
+    }
+
+        .custom-badge-orange i {
+            color: #FF8C00; /* custom orange icon color for all items */
+        }
+</style>
+
+<div class="logo-container">
+    <img src="/img/branding/logo.png" alt="Logo" class="logo">
+</div>
+<br />
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var currentDate = new Date();
+        var day = currentDate.getDate();
+        var monthIndex = currentDate.getMonth();
+        var year = currentDate.getFullYear();
+
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var formattedDate = day + ' ' + months[monthIndex] + ' ' + year;
+
+        document.getElementById('current-date').textContent = formattedDate;
+    });
+</script>
+
+<div>Date: <span id="current-date"></span></div>
+<br />
+
+@* Local Stock Summary *@
+<div class="col-12">
+    <div class="card shadow-none border border-primary mb-3">
+        <div class="card-widget-separator-wrapper">
+            <div class="card-body card-widget-separator">
+                <h5 class="card-title">Local Stock Summary</h5>
+                <div class="row gy-4 gy-sm-1">
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="d-flex justify-content-between align-items-start card-widget-1 border-end pb-3 pb-sm-0">
+                            <div>
+                                <h3 class="mb-1">@totalItemCount</h3>
+                                <p class="mb-0">Total Items</p>
+                            </div>
+                            <span class="badge rounded p-2 me-sm-4 custom-badge-yellow">
+                                <i class="bx bx-box bx-sm"></i>
+                            </span>
+                        </div>
+                        <hr class="d-none d-sm-block d-lg-none me-4">
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="d-flex justify-content-between align-items-start card-widget-2 border-end pb-3 pb-sm-0">
+                            <div>
+                                <h3 class="mb-1">@lPickUpCount</h3>
+                                <p class="mb-0">Pick Up Needed</p>
+                            </div>
+                            <span class="badge rounded p-2 me-lg-4 custom-badge-red">
+                                <i class="bx bx-x-circle bx-sm custom-icon-red"></i>
+                            </span>
+                        </div>
+                        <hr class="d-none d-sm-block d-lg-none">
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="d-flex justify-content-between align-items-start border-end pb-3 pb-sm-0 card-widget-3">
+                            <div>
+                                <h3 class="mb-1">@llowStockItemCount</h3>
+                                <p class="mb-0">Low Stock</p>
+                            </div>
+                            <span class="badge rounded p-2 me-sm-4 custom-badge-orange">
+                                <i class="bx bx-error-circle bx-sm custom-icon-orange"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h3 class="mb-1">@linStockItemCount</h3>
+                                <p class="mb-0">In Stock</p>
+                            </div>
+                            <span class="badge rounded p-2 custom-badge-green">
+                                <i class="bx bx-check-circle bx-sm custom-icon-green"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<br />
+@* Local out of stock *@
+<div class="col-md-6 col-xl-6">
+    <div class="card shadow-none border border-danger mb-3">
+        <div class="card-header bg-danger text-white">
+            <div class="d-flex justify-content-between">
+                <h5 class="card-title mb-0 text-white">Local</h5>
+                <small class="text-white">Products to be Picked Up</small>
+            </div>
+        </div>
+        <div class="card-body">
+            <p class="card-text">
+                <table class="table text-danger">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Size</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model)
+                        {
+                            if (product.LocalStatus == "pick up needed")
+                            {
+                                <tr>
+                                    <td>@product.Brand.Bname - @product.Pname</td>
+                                    <td>@product.Size</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </p>
+        </div>
+    </div>
+</div>
+<br />
+<br />
+@* Local low stock *@
+<div class="col-md-6 col-xl-6">
+    <div class="card shadow-none border border-warning mb-3">
+        <div class="card-header bg-warning text-white">
+            <div class="d-flex justify-content-between">
+                <h5 class="card-title mb-0 text-white">Local</h5>
+                <small class="text-white">Low Stock Products</small>
+            </div>
+        </div>
+        <div class="card-body">
+            <p class="card-text">
+                <table class="table text-warning">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Size</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model)
+                        {
+                            if (product.LocalStatus == "low stock")
+                            {
+                                <tr>
+                                    <td>@product.Brand.Bname - @product.Pname</td>
+                                    <td>@product.Size</td>
+                                    <td>@product.LocalQty</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </p>
+        </div>
+    </div>
+</div>
+<br />
+<br />
+@* Local in stock *@
+<div class="col-md-6 col-xl-6">
+    <div class="card shadow-none border border-success mb-3">
+        <div class="card-header bg-success text-white">
+            <div class="d-flex justify-content-between">
+                <h5 class="card-title mb-0 text-white">Local</h5>
+                <small class="text-white">In Stock Products</small>
+            </div>
+        </div>
+        <div class="card-body">
+            <p class="card-text">
+                <table class="table text-success">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Size</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model)
+                        {
+                            if (product.LocalStatus == "in stock")
+                            {
+                                <tr>
+                                    <td>@product.Brand.Bname - @product.Pname</td>
+                                    <td>@product.Size</td>
+                                    <td>@product.LocalQty</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </p>
+        </div>
+    </div>
+</div>

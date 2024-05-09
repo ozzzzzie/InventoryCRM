@@ -1,7 +1,7 @@
 @model IEnumerable<NAIMS.Models.Product>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Warehouse Inventory";
 }
 
 <style>
@@ -11,9 +11,24 @@
 </style>
 
 <h1>Warehouse Inventory</h1>
-<p align=right>
-    <a asp-controller="Orders" asp-action="pickup" class="btn btn-dark">stock report</a>
-</p>
+
+<div class="d-flex justify-content-end">
+    <div class="btn-group">
+        <button type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Stock Reports
+        </button>
+        <ul class="dropdown-menu">
+            <li>
+                <h6 class="dropdown-header text-uppercase">Stock Reports</h6>
+            </li>
+            <li><a asp-controller="Stocks" asp-action="WarehouseStockReport" class="dropdown-item">All Products</a></li>
+            <li><a asp-controller="Stocks" asp-action="WarehouseOutofStockItems" class="dropdown-item">Out of Stock</a></li>
+            <li><a asp-controller="Stocks" asp-action="WarehouseLowStockItems" class="dropdown-item">Low Stock</a></li>
+            <li><a asp-controller="Stocks" asp-action="WarehouseInStockItems" class="dropdown-item">In Stock</a></li>
+        </ul>
+    </div>
+</div>
+<br />
 <div class="card">
     <div class="table-responsive text-nowrap">
         <table class="table table-hover">
