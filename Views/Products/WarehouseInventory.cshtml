@@ -13,8 +13,11 @@
 <h1>Warehouse Inventory</h1>
 
 <div class="d-flex justify-content-end">
-    <div class="btn-group">
-        <button type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <div class="mr-2">
+        <a asp-controller="Products" asp-action="MovingItems" class="btn btn-dark">Move Products</a>
+    </div>
+    <div class="btn-group" style="padding-left: 10px;">
+        <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Stock Reports
         </button>
         <ul class="dropdown-menu">

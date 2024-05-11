@@ -1,0 +1,57 @@
+@model List<NAIMS.Models.Product>
+<a asp-controller="Products" asp-action="Warehouseinventory" type="button" class="btn btn-dark">
+    <i class="tf-icons bx bx-arrow-back"></i> Back
+</a>
+<br />
+<br />
+<h2 class="d-flex justify-content-center">
+    Move Items
+</h2>
+@using (Html.BeginForm("ProcessMoveItems", "Products"))
+{
+    <div class="d-flex justify-content-center">
+        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+            <input type="radio" name="direction" value="warehouseToLocal" class="btn-check" id="warehouseToLocal" checked>
+            <label class="btn btn-outline-primary" for="warehouseToLocal">Warehouse to Local</label>
+            <input type="radio" name="direction" value="localToWarehouse" class="btn-check" id="localToWarehouse">
+            <label class="btn btn-outline-primary" for="localToWarehouse">Local to Warehouse</label>
+        </div>
+    </div>
+    <br />
+    <div class="card">
+        <div class="table-responsive text-nowrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>SKU</th>
+                        <th>Barcode</th>
+                        <th>Product</th>
+                        <th>Warehouse Qty</th>
+                        <th>Local Qty</th>
+                        <th>Move Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in Model)
+                    {
+                        <tr>
+                            <td>@product.Sku</td>
+                            <td>@product.Barcode</td>
+                            <td>@product.Brand.Bname - @product.Pname</td>
+                            <td>@product.WarehouseQty</td>
+                            <td>@product.LocalQty</td>
+                            <td>
+                                <input type="hidden" name="productIds" value="@product.ProductId">
+                                <input type="number" name="moveQuantities[@product.ProductId]">
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <br />
+    <div class="d-flex justify-content-end">
+        <input type="submit" class=" btn btn-dark" value="Move" />
+    </div>
+}

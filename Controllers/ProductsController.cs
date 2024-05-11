@@ -261,10 +261,87 @@ namespace NAIMS.Controllers
       return View(product);
     }
 
-
-    public async Task<IActionResult> MoveItems()
+    public IActionResult MovingItems()
     {
-      return View();
+      var products = _context.Products.ToList();
+      var brands = _context.Brands.ToList();
+
+      ViewBag.Brands = new SelectList(brands, "BrandId", "Bname");
+      return View(products);
+    }
+
+    [HttpPost]
+    [HttpPost]
+    public async Task<IActionResult> ProcessMoveItems(
+  List<int> productIds,
+  Dictionary<int, int> moveQuantities,
+  string direction)
+    {
+
+      if (productIds.Count != moveQuantities.Count)
+      {
+        return BadRequest("Quantities don't match products");
+      }
+
+      foreach (var id in productIds)
+      {
+
+        var qty = moveQuantities[id];
+        var product = await _context.Products.FindAsync(id);
+
+
+        //var qty = moveQuantities[id];
+
+        int warehouseQty = product.WarehouseQty;
+        int localQty = product.LocalQty;
+
+        if (direction == "warehouseToLocal")
+        {
+          product.WarehouseQty -= qty;
+          product.LocalQty += qty;
+        }
+        else if (direction == "localToWarehouse")
+        {
+          product.WarehouseQty += qty;
+          product.LocalQty -= qty;
+        }
+
+        // Update warehouse status
+
+        if (product.WarehouseQty == 0)
+        {
+          product.WarehouseStatus = "out of stock";
+        }
+        else if (product.WarehouseQty <= 24)
+        {
+          product.WarehouseStatus = "low stock";
+        }
+        else
+        {
+          product.WarehouseStatus = "in stock";
+        }
+
+        // Update local status
+
+        if (product.LocalQty == 0)
+        {
+          product.LocalStatus = "pick up needed";
+        }
+        else if (product.LocalQty <= 24)
+        {
+          product.LocalStatus = "low stock";
+        }
+        else
+        {
+          product.LocalStatus = "in stock";
+        }
+
+      }
+
+      await _context.SaveChangesAsync();
+
+      return RedirectToAction("Index");
+
     }
 
     // GET: Products1/Create
