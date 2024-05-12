@@ -1,47 +1,19 @@
-@model List<NAIMS.Models.Product>
+@model IEnumerable<NAIMS.Models.Product>
 
 @{
-
-    Layout = "_PrintLayout";
-
-    ViewData["Title"] = "Items to Pick Up Print";
-
+    ViewData["Title"] = "Items for Pick Up";
 }
-
-<style>
-    .logo-container {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-    }
-
-    .logo {
-        max-width: 100px; 
-    }
-</style>
-
-<div class="logo-container">
-    <img src="/img/branding/logo.png" alt="Logo" class="logo">
-</div>
+<a asp-controller="Products" asp-action="LocalInventory" type="button" class="btn btn-dark">
+    <i class="tf-icons bx bx-arrow-back"></i> Back
+</a>
 <br />
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var currentDate = new Date();
-        var day = currentDate.getDate();
-        var monthIndex = currentDate.getMonth();
-        var year = currentDate.getFullYear();
-
-        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        var formattedDate = day + ' ' + months[monthIndex] + ' ' + year;
-
-        document.getElementById('current-date').textContent = formattedDate;
-    });
-</script>
-
-<div>Date: <span id="current-date"></span></div>
 <br />
+<p align=right>
+    <button onclick="printDifferentPage()" class="btn btn-dark">Print</button>
+</p>
+
 @* Local out of stock *@
-<div class="col-md-6 col-xl-6">
+<div class="col-md-6 col-xl-12">
     <div class="card shadow-none border border-danger mb-3">
         <div class="card-header bg-danger text-white">
             <div class="d-flex justify-content-between">
@@ -75,4 +47,13 @@
         </div>
     </div>
 </div>
+
+<script>
+    function printDifferentPage() {
+        var newWindow = window.open('LocalPickUpItemsPrint');
+        newWindow.onload = function () {
+            newWindow.print();
+        };
+    }
+</script>
 

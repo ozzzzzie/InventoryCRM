@@ -1,6 +1,11 @@
 @model List<NAIMS.Models.Product>
-<a asp-controller="Products" asp-action="Warehouseinventory" type="button" class="btn btn-dark">
-    <i class="tf-icons bx bx-arrow-back"></i> Back
+
+  @{
+        ViewData["Title"] = "Move Items";
+  }
+
+<a asp-controller="Products" asp-action="Index" type="button" class="btn btn-dark">
+    <i class="tf-icons bx bx-arrow-back"></i> Back to All Products
 </a>
 <br />
 <br />

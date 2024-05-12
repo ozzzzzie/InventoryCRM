@@ -1,0 +1,61 @@
+@model IEnumerable<NAIMS.Models.Product>
+
+@{
+    ViewData["Title"] = "Low Stock Items";
+}
+
+<a asp-controller="Products" asp-action="LocalInventory" type="button" class="btn btn-dark">
+    <i class="tf-icons bx bx-arrow-back"></i> Back
+</a><br /><br />
+<h2 align="middle">Low Stock Items</h2>
+<p align=right>
+    <button onclick="printDifferentPage()" class="btn btn-dark">Print</button>
+</p>
+
+@* Local Low stock *@
+<div class="col-md-6 col-xl-12">
+    <div class="card shadow-none border border-warning mb-3">
+        <div class="card-header bg-warning text-white">
+            <div class="d-flex justify-content-between">
+                <h5 class="card-title mb-0 text-white">Local</h5>
+                <small class="text-white">Low Stock Products</small>
+            </div>
+        </div>
+        <div class="card-body">
+            <p class="card-text">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Size</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model)
+                        {
+                            if (product.LocalStatus == "low stock")
+                            {
+                                <tr>
+                                    <td>@product.Brand.Bname - @product.Pname</td>
+                                    <td>@product.Size</td>
+                                    <td>@product.LocalQty</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function printDifferentPage() {
+        var newWindow = window.open('LocalLowStockItemsPrint');
+        newWindow.onload = function () {
+            newWindow.print();
+        };
+    }
+</script>
+

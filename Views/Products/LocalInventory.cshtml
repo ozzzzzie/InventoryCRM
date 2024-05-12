@@ -12,10 +12,26 @@
 
 <h1>Local Inventory</h1>
 
-<p align=right>
-    <a asp-controller="Stocks" asp-action="LocalStockReport" class="btn btn-dark">stock report</a>
-    <a asp-controller="Orders" asp-action="pickup" class="btn btn-dark">pick up items</a>
-</p>
+<div class="d-flex justify-content-end">
+    <div class="mr-2">
+        <a asp-controller="Products" asp-action="MovingItems" class="btn btn-dark">Move Products</a>
+    </div>
+    <div class="btn-group" style="padding-left: 10px;">
+        <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Stock Reports
+        </button>
+        <ul class="dropdown-menu">
+            <li>
+                <h6 class="dropdown-header text-uppercase">Stock Reports</h6>
+            </li>
+            <li><a asp-controller="Stocks" asp-action="LocalStockReport" class="dropdown-item">All Products</a></li>
+            <li><a asp-controller="Stocks" asp-action="LocalPickUpItems" class="dropdown-item">Pick Up Needed</a></li>
+            <li><a asp-controller="Stocks" asp-action="LocalLowStockItems" class="dropdown-item">Low Stock</a></li>
+            <li><a asp-controller="Stocks" asp-action="LocalInStockItems" class="dropdown-item">In Stock</a></li>
+        </ul>
+    </div>
+</div>
+<br />
 
 <div class="card">
     <div class="table-responsive text-nowrap">

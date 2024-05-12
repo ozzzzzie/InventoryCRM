@@ -110,7 +110,7 @@ namespace NAIMS.Controllers
       return View(products);
     }
 
-    public async Task<IActionResult> PickUpItems()
+    public async Task<IActionResult> LocalPickUpItems()
     {
       var products = await _context.Products
           .Include(p => p.Brand)
@@ -119,7 +119,43 @@ namespace NAIMS.Controllers
       return View(products);
     }
 
-    public async Task<IActionResult> PickUpItemsPrint()
+    public async Task<IActionResult> LocalPickUpItemsPrint()
+    {
+      var products = await _context.Products
+          .Include(p => p.Brand)
+          .ToListAsync();
+
+      return View(products);
+    }
+
+    public async Task<IActionResult> LocalLowStockItems()
+    {
+      var products = await _context.Products
+          .Include(p => p.Brand)
+          .ToListAsync();
+
+      return View(products);
+    }
+    public async Task<IActionResult> LocalInStockItems()
+    {
+      var products = await _context.Products
+          .Include(p => p.Brand)
+          .ToListAsync();
+
+      return View(products);
+    }
+    public async Task<IActionResult> LocalLowStockItemsPrint()
+    {
+      var products = await _context.Products
+          .Include(p => p.Brand)
+          .ToListAsync();
+
+      return View(products);
+    }
+
+
+
+    public async Task<IActionResult> LocalInStockItemsPrint()
     {
       var products = await _context.Products
           .Include(p => p.Brand)

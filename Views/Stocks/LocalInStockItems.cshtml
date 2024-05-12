@@ -1,43 +1,45 @@
 @model IEnumerable<NAIMS.Models.Product>
 
 @{
-    ViewData["Title"] = "Items for Pick Up";
+    ViewData["Title"] = "In Stock Items";
 }
 
-@{
-    ViewData["Title"] = "Local Inventory Stock Report";
-    }
-
+<a asp-controller="Products" asp-action="Localinventory" type="button" class="btn btn-dark">
+    <i class="tf-icons bx bx-arrow-back"></i> Back
+</a><br /><br />
+<h2 align="middle">In Stock Items</h2>
 <p align=right>
     <button onclick="printDifferentPage()" class="btn btn-dark">Print</button>
 </p>
 
-@* Local out of stock *@
-<div class="col-md-6 col-xl-6">
-    <div class="card shadow-none border border-danger mb-3">
-        <div class="card-header bg-danger text-white">
+@* Local In stock *@
+<div class="col-md-6 col-xl-12">
+    <div class="card shadow-none border border-success mb-3">
+        <div class="card-header bg-success text-white">
             <div class="d-flex justify-content-between">
                 <h5 class="card-title mb-0 text-white">Local</h5>
-                <small class="text-white">Products to be Picked Up</small>
+                <small class="text-white">In Stock Products</small>
             </div>
         </div>
         <div class="card-body">
             <p class="card-text">
-                <table class="table text-danger">
+                <table class="table">
                     <thead>
                         <tr>
                             <th>Product</th>
                             <th>Size</th>
+                            <th>Quantity</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var product in Model)
                         {
-                            if (product.LocalStatus == "pick up needed")
+                            if (product.LocalStatus == "in stock")
                             {
                                 <tr>
                                     <td>@product.Brand.Bname - @product.Pname</td>
                                     <td>@product.Size</td>
+                                    <td>@product.LocalQty</td>
                                 </tr>
                             }
                         }
@@ -48,9 +50,10 @@
     </div>
 </div>
 
+
 <script>
     function printDifferentPage() {
-        var newWindow = window.open('PickUpItemsPrint');
+        var newWindow = window.open('LocalInStockItemsPrint');
         newWindow.onload = function () {
             newWindow.print();
         };
