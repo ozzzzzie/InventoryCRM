@@ -11,7 +11,9 @@ public partial class Order
 
     public DateOnly OrderDate { get; set; }
 
-    public string? SalesRep { get; set; }
+    public int? EmployeeId { get; set; }
 
     public virtual Contact? Contact { get; set; }
+
+    public virtual Employee? Employee { get; set; }
 }

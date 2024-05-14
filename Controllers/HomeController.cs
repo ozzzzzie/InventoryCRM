@@ -19,7 +19,22 @@ public class HomeController : Controller
         return View();
     }
 
-    public IActionResult Privacy()
+  public IActionResult SuperAdminDashboard()
+  {
+    return View();
+  }
+
+  public IActionResult ManagerDashboard()
+  {
+    return View();
+  }
+
+  public IActionResult SalesDashboard()
+  {
+    return View();
+  }
+
+  public IActionResult Privacy()
     {
         return View();
     }

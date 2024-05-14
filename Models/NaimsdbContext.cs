@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,164 +6,201 @@ namespace NAIMS.Models;
 
 public partial class NaimsdbContext : DbContext
 {
-  public NaimsdbContext()
-  {
-  }
-
-  public NaimsdbContext(DbContextOptions<NaimsdbContext> options)
-      : base(options)
-  {
-  }
-
-  public virtual DbSet<Brand> Brands { get; set; }
-
-  public virtual DbSet<Contact> Contacts { get; set; }
-
-  public virtual DbSet<Order> Orders { get; set; }
-
-  public virtual DbSet<Product> Products { get; set; }
-
-  public virtual DbSet<ProductsOrder> ProductsOrders { get; set; }
-
-  protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-  {
-
-  }
-
-  protected override void OnModelCreating(ModelBuilder modelBuilder)
-  {
-    modelBuilder.Entity<Brand>(entity =>
+    public NaimsdbContext()
     {
-      entity.HasKey(e => e.BrandId).HasName("PK__BRANDS__F89D34097EBADCE0");
+    }
 
-      entity.ToTable("BRANDS");
-
-      entity.HasIndex(e => e.BrandId, "UQ__BRANDS__F89D3408A1095A56").IsUnique();
-
-      entity.Property(e => e.BrandId).HasColumnName("BRAND_ID");
-      entity.Property(e => e.Bdescription)
-              .HasMaxLength(1024)
-              .IsUnicode(false)
-              .HasColumnName("BDESCRIPTION");
-      entity.Property(e => e.Bname)
-              .HasMaxLength(64)
-              .IsUnicode(false)
-              .HasColumnName("BNAME");
-    });
-
-    modelBuilder.Entity<Contact>(entity =>
+    public NaimsdbContext(DbContextOptions<NaimsdbContext> options)
+        : base(options)
     {
-      entity.HasKey(e => e.ContactId).HasName("PK__CONTACTS__99DE4258F3160471");
+    }
 
-      entity.ToTable("CONTACTS");
+    public virtual DbSet<Brand> Brands { get; set; }
 
-      entity.HasIndex(e => e.ContactId, "UQ__CONTACTS__99DE4259510B8AAE").IsUnique();
+    public virtual DbSet<Contact> Contacts { get; set; }
 
-      entity.Property(e => e.ContactId).HasColumnName("CONTACT_ID");
-      entity.Property(e => e.Caddress)
-              .HasMaxLength(256)
-              .IsUnicode(false)
-              .HasColumnName("CADDRESS");
-      entity.Property(e => e.Cname)
-              .HasMaxLength(64)
-              .IsUnicode(false)
-              .HasColumnName("CNAME");
-      entity.Property(e => e.Ctype)
-              .HasMaxLength(64)
-              .IsUnicode(false)
-              .HasColumnName("CTYPE");
-      entity.Property(e => e.Email)
-              .HasMaxLength(128)
-              .IsUnicode(false)
-              .HasColumnName("EMAIL");
-      entity.Property(e => e.PhoneNumber)
-              .HasMaxLength(128)
-              .IsUnicode(false)
-              .HasColumnName("PHONE_NUMBER");
-    });
+    public virtual DbSet<Employee> Employees { get; set; }
 
-    modelBuilder.Entity<Order>(entity =>
+    public virtual DbSet<Order> Orders { get; set; }
+
+    public virtual DbSet<Product> Products { get; set; }
+
+    public virtual DbSet<ProductsOrder> ProductsOrders { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=naimsdb;Trusted_Connection=True;");
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-      entity.HasKey(e => e.OrderId).HasName("PK__ORDERS__460A9464B3C365C6");
+        modelBuilder.Entity<Brand>(entity =>
+        {
+            entity.HasKey(e => e.BrandId).HasName("PK__BRANDS__F89D3409B21EAAC0");
 
-      entity.ToTable("ORDERS");
+            entity.ToTable("BRANDS");
 
-      entity.HasIndex(e => e.OrderId, "UQ__ORDERS__460A946581728E4A").IsUnique();
+            entity.HasIndex(e => e.BrandId, "UQ__BRANDS__F89D340811A5D6EE").IsUnique();
 
-      entity.Property(e => e.OrderId).HasColumnName("ORDER_ID");
-      entity.Property(e => e.ContactId).HasColumnName("CONTACT_ID");
-      entity.Property(e => e.OrderDate).HasColumnName("ORDER_DATE");
-      entity.Property(e => e.SalesRep)
-              .HasMaxLength(64)
-              .IsUnicode(false)
-              .HasColumnName("SALES_REP");
+            entity.Property(e => e.BrandId).HasColumnName("BRAND_ID");
+            entity.Property(e => e.Bdescription)
+                .HasMaxLength(1024)
+                .IsUnicode(false)
+                .HasColumnName("BDESCRIPTION");
+            entity.Property(e => e.Bname)
+                .HasMaxLength(64)
+                .IsUnicode(false)
+                .HasColumnName("BNAME");
+        });
 
-      entity.HasOne(d => d.Contact).WithMany(p => p.Orders)
-              .HasForeignKey(d => d.ContactId)
-              .HasConstraintName("FK__ORDERS__CONTACT___2F10007B");
-    });
+        modelBuilder.Entity<Contact>(entity =>
+        {
+            entity.HasKey(e => e.ContactId).HasName("PK__CONTACTS__99DE4258163D1280");
 
-    modelBuilder.Entity<Product>(entity =>
-    {
-      entity.HasKey(e => e.ProductId).HasName("PK__PRODUCTS__52B417630C00E652");
+            entity.ToTable("CONTACTS");
 
-      entity.ToTable("PRODUCTS");
+            entity.HasIndex(e => e.ContactId, "UQ__CONTACTS__99DE4259CA242359").IsUnique();
 
-      entity.HasIndex(e => e.ProductId, "UQ__PRODUCTS__52B4176228A29EF0").IsUnique();
+            entity.Property(e => e.ContactId).HasColumnName("CONTACT_ID");
+            entity.Property(e => e.Caddress)
+                .HasMaxLength(256)
+                .IsUnicode(false)
+                .HasColumnName("CADDRESS");
+            entity.Property(e => e.Cname)
+                .HasMaxLength(64)
+                .IsUnicode(false)
+                .HasColumnName("CNAME");
+            entity.Property(e => e.Ctype)
+                .HasMaxLength(64)
+                .IsUnicode(false)
+                .HasColumnName("CTYPE");
+            entity.Property(e => e.Email)
+                .HasMaxLength(128)
+                .IsUnicode(false)
+                .HasColumnName("EMAIL");
+            entity.Property(e => e.PhoneNumber)
+                .HasMaxLength(128)
+                .IsUnicode(false)
+                .HasColumnName("PHONE_NUMBER");
+        });
 
-      entity.Property(e => e.ProductId).HasColumnName("PRODUCT_ID");
-      entity.Property(e => e.Barcode).HasColumnName("BARCODE");
-      entity.Property(e => e.BrandId).HasColumnName("BRAND_ID");
-      entity.Property(e => e.LocalQty).HasColumnName("LOCAL_QTY");
-      entity.Property(e => e.LocalStatus)
-              .HasMaxLength(64)
-              .IsUnicode(false)
-              .HasColumnName("LOCAL_STATUS");
-      entity.Property(e => e.Pdescription)
-              .HasMaxLength(1024)
-              .IsUnicode(false)
-              .HasColumnName("PDESCRIPTION");
-      entity.Property(e => e.Pname)
-              .HasMaxLength(256)
-              .IsUnicode(false)
-              .HasColumnName("PNAME");
-      entity.Property(e => e.Price).HasColumnName("PRICE");
-      entity.Property(e => e.PriceVat).HasColumnName("PRICE_VAT");
-      entity.Property(e => e.Size)
-              .HasMaxLength(32)
-              .IsUnicode(false)
-              .HasColumnName("SIZE");
-      entity.Property(e => e.Sku)
-              .HasMaxLength(32)
-              .IsUnicode(false)
-              .HasColumnName("SKU");
-      entity.Property(e => e.WarehouseQty).HasColumnName("WAREHOUSE_QTY");
-      entity.Property(e => e.WarehouseStatus)
-              .HasMaxLength(64)
-              .IsUnicode(false)
-              .HasColumnName("WAREHOUSE_STATUS");
+        modelBuilder.Entity<Employee>(entity =>
+        {
+            entity.HasKey(e => e.EmployeeId).HasName("PK__EMPLOYEE__CBA14F4850D5DD84");
 
-      entity.HasOne(d => d.Brand).WithMany(p => p.Products)
-              .HasForeignKey(d => d.BrandId)
-              .HasConstraintName("FK__PRODUCTS__BRAND___286302EC");
-    });
+            entity.ToTable("EMPLOYEES");
 
-    modelBuilder.Entity<ProductsOrder>(entity =>
-    {
-      entity.HasKey(e => e.ProductorderId).HasName("PK__PRODUCTS__2C75A0F2E0F0A37C");
+            entity.HasIndex(e => e.EmployeeId, "UQ__EMPLOYEE__CBA14F49A907D88D").IsUnique();
 
-      entity.ToTable("PRODUCTS_ORDERS");
+            entity.Property(e => e.EmployeeId).HasColumnName("EMPLOYEE_ID");
+            entity.Property(e => e.EComissionPerc)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("E_COMISSION_PERC");
+            entity.Property(e => e.EEmail)
+                .HasMaxLength(256)
+                .IsUnicode(false)
+                .HasColumnName("E_EMAIL");
+            entity.Property(e => e.EFirstname)
+                .HasMaxLength(64)
+                .IsUnicode(false)
+                .HasColumnName("E_FIRSTNAME");
+            entity.Property(e => e.ELastname)
+                .HasMaxLength(64)
+                .IsUnicode(false)
+                .HasColumnName("E_LASTNAME");
+            entity.Property(e => e.EPhonenumber)
+                .HasMaxLength(64)
+                .IsUnicode(false)
+                .HasColumnName("E_PHONENUMBER");
+            entity.Property(e => e.ERole)
+                .HasMaxLength(64)
+                .IsUnicode(false)
+                .HasColumnName("E_ROLE");
+            entity.Property(e => e.ETarget).HasColumnName("E_TARGET");
+        });
 
-      entity.HasIndex(e => e.ProductorderId, "UQ__PRODUCTS__2C75A0F35BCA2BA8").IsUnique();
+        modelBuilder.Entity<Order>(entity =>
+        {
+            entity.HasKey(e => e.OrderId).HasName("PK__ORDERS__460A94648193EE99");
 
-      entity.Property(e => e.ProductorderId).HasColumnName("PRODUCTORDER_ID");
-      entity.Property(e => e.OrderId).HasColumnName("ORDER_ID");
-      entity.Property(e => e.ProductId).HasColumnName("PRODUCT_ID");
-      entity.Property(e => e.Qty).HasColumnName("QTY");
-    });
+            entity.ToTable("ORDERS");
 
-    OnModelCreatingPartial(modelBuilder);
-  }
+            entity.HasIndex(e => e.OrderId, "UQ__ORDERS__460A94656BC20471").IsUnique();
 
-  partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+            entity.Property(e => e.OrderId).HasColumnName("ORDER_ID");
+            entity.Property(e => e.ContactId).HasColumnName("CONTACT_ID");
+            entity.Property(e => e.EmployeeId).HasColumnName("EMPLOYEE_ID");
+            entity.Property(e => e.OrderDate).HasColumnName("ORDER_DATE");
+
+            entity.HasOne(d => d.Contact).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.ContactId)
+                .HasConstraintName("FK__ORDERS__CONTACT___31EC6D26");
+
+            entity.HasOne(d => d.Employee).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.EmployeeId)
+                .HasConstraintName("FK__ORDERS__EMPLOYEE__32E0915F");
+        });
+
+        modelBuilder.Entity<Product>(entity =>
+        {
+            entity.HasKey(e => e.ProductId).HasName("PK__PRODUCTS__52B417630E111965");
+
+            entity.ToTable("PRODUCTS");
+
+            entity.HasIndex(e => e.ProductId, "UQ__PRODUCTS__52B417622F2A4671").IsUnique();
+
+            entity.Property(e => e.ProductId).HasColumnName("PRODUCT_ID");
+            entity.Property(e => e.Barcode).HasColumnName("BARCODE");
+            entity.Property(e => e.BrandId).HasColumnName("BRAND_ID");
+            entity.Property(e => e.LocalQty).HasColumnName("LOCAL_QTY");
+            entity.Property(e => e.LocalStatus)
+                .HasMaxLength(64)
+                .IsUnicode(false)
+                .HasColumnName("LOCAL_STATUS");
+            entity.Property(e => e.Pdescription)
+                .HasMaxLength(1024)
+                .IsUnicode(false)
+                .HasColumnName("PDESCRIPTION");
+            entity.Property(e => e.Pname)
+                .HasMaxLength(256)
+                .IsUnicode(false)
+                .HasColumnName("PNAME");
+            entity.Property(e => e.Price).HasColumnName("PRICE");
+            entity.Property(e => e.PriceVat).HasColumnName("PRICE_VAT");
+            entity.Property(e => e.Size)
+                .HasMaxLength(32)
+                .IsUnicode(false)
+                .HasColumnName("SIZE");
+            entity.Property(e => e.Sku)
+                .HasMaxLength(32)
+                .IsUnicode(false)
+                .HasColumnName("SKU");
+            entity.Property(e => e.WarehouseQty).HasColumnName("WAREHOUSE_QTY");
+            entity.Property(e => e.WarehouseStatus)
+                .HasMaxLength(64)
+                .IsUnicode(false)
+                .HasColumnName("WAREHOUSE_STATUS");
+
+            entity.HasOne(d => d.Brand).WithMany(p => p.Products)
+                .HasForeignKey(d => d.BrandId)
+                .HasConstraintName("FK__PRODUCTS__BRAND___286302EC");
+        });
+
+        modelBuilder.Entity<ProductsOrder>(entity =>
+        {
+            entity.HasKey(e => e.ProductorderId).HasName("PK__PRODUCTS__2C75A0F2C46B7F4D");
+
+            entity.ToTable("PRODUCTS_ORDERS");
+
+            entity.HasIndex(e => e.ProductorderId, "UQ__PRODUCTS__2C75A0F382578490").IsUnique();
+
+            entity.Property(e => e.ProductorderId).HasColumnName("PRODUCTORDER_ID");
+            entity.Property(e => e.OrderId).HasColumnName("ORDER_ID");
+            entity.Property(e => e.ProductId).HasColumnName("PRODUCT_ID");
+            entity.Property(e => e.Qty).HasColumnName("QTY");
+        });
+
+        OnModelCreatingPartial(modelBuilder);
+    }
+
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

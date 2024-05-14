@@ -31,11 +31,23 @@
             </a>
         </li>
         </li>
-        <li class='menu-item@(currentPage == "/TEST" ? " active" : "")'>
+@*         <li class='menu-item@(currentPage == "/TEST" ? " active" : "")'>
             <a asp-controller="Products" asp-action="Testing" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-band-aid"></i>
                 <div>TESTING</div>
             </a>
+        </li> *@
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Management</span>
+        </li>
+        <li class='menu-item@(currentPage == "/Employees" ? " active" : "")'>
+            <a asp-controller="Employees" asp-action="Index" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-face"></i>
+                <div>Employees</div>
+            </a>
+        </li>
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Order Information</span>
         </li>
         <li class='menu-item@(currentPage == "/All" ? " active" : "")'>
             <a asp-controller="Orders" asp-action="Index" class="menu-link">
