@@ -1,0 +1,46 @@
+@model NAIMS.Models.AddProductsViewModel
+
+@{
+    ViewBag.Title = "Add Products";
+}
+
+@using (Html.BeginForm("AddProducts", "Orders", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Order.OrderDate)
+        @Html.TextBoxFor(model => model.Order.OrderDate, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Order.OrderDate, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Order.EmployeeId)
+        @Html.DropDownListFor(model => model.Order.EmployeeId, ViewData["EmployeeId"] as SelectList, "-- Select Employee --", new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Order.EmployeeId, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Order.ContactId)
+        @Html.DropDownListFor(model => model.Order.ContactId, ViewData["ContactId"] as SelectList, "-- Select Contact --", new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Order.ContactId, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Render other input fields and validation messages for the Order model properties -->
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ProductsOrder.ProductId)
+        @Html.DropDownListFor(model => model.ProductsOrder.ProductId, new SelectList(Model.Products, "ProductId", "Pname"), "-- Select Product --", new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.ProductsOrder.ProductId, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ProductsOrder.Qty)
+        @Html.TextBoxFor(model => model.ProductsOrder.Qty, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.ProductsOrder.Qty, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Render other input fields and validation messages for the ProductsOrder model properties -->
+
+    <button type="submit" class="btn btn-primary">Add Products</button>
+}

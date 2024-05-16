@@ -1,0 +1,75 @@
+@model NAIMS.Models.Order
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Order</h4>
+<hr />
+<div class="col-xl">
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Order Information</h5> <small class="text-muted float-end"></small>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create">
+                <div class="table-responsive text-nowrap">
+                    <table class="table table-borderless">
+                        <tr class="text-nowrap">
+                            <td>
+                                <div class="mb-3">
+                                    <label class="form-label" for="basic-icon-default-fullname">Sales Representative</label>
+                                    <div class="input-group input-group-merge">
+                                        <span id="basic-icon-default-sales-rep" class="input-group-text"><i class="bx bxs-user"></i></span>
+                                        <select asp-for="EmployeeId" id="basic-icon-default-emp" class="form-select" aria-describedby="basic-icon-default-emp" asp-items="ViewBag.EmployeeId"></select>
+                                        <span asp-validation-for="EmployeeId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="mb-3">
+                                    <label class="form-label" for="basic-icon-default-company">Order Number</label>
+                                    <div class="input-group input-group-merge">
+                                        <span id="basic-icon-default-company2" class="input-group-text"><i class="bx bxs-shopping-bags"></i></span>
+                                        <input type="text" id="basic-icon-default-order-number" class="form-control" aria-describedby="basic-icon-default-order-number" />
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="text-nowrap">
+                            <td>
+                                <div class="mb-3">
+                                    <label class="form-label" for="basic-icon-default-company">Customer</label>
+                                    <div class="input-group input-group-merge">
+                                        <span id="basic-icon-default-customer" class="input-group-text"><i class="bx bxs-contact"></i></span>
+                                        <select asp-for="ContactId" id="basic-icon-default-customer" class="form-select" aria-describedby="basic-icon-default-customer" asp-items="ViewBag.ContactId"></select>
+                                        <span asp-validation-for="ContactId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="mb-3">
+                                    <label class="form-label" for="basic-icon-default-company">Date</label>
+                                    <div class="input-group input-group-merge">
+                                        <span id="basic-icon-default-date" class="input-group-text"><i class="bx bxs-calendar"></i></span>
+                                        <input asp-for="OrderDate" class="form-control" type="date" value="" id="html5-date-input" />
+
+                                    </div><span asp-validation-for="OrderDate" class="text-danger"></span>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

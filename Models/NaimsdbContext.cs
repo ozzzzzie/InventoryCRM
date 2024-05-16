@@ -35,11 +35,11 @@ public partial class NaimsdbContext : DbContext
     {
         modelBuilder.Entity<Brand>(entity =>
         {
-            entity.HasKey(e => e.BrandId).HasName("PK__BRANDS__F89D3409B21EAAC0");
+            entity.HasKey(e => e.BrandId).HasName("PK__BRANDS__F89D3409423E8CA7");
 
             entity.ToTable("BRANDS");
 
-            entity.HasIndex(e => e.BrandId, "UQ__BRANDS__F89D340811A5D6EE").IsUnique();
+            entity.HasIndex(e => e.BrandId, "UQ__BRANDS__F89D34084781A4CB").IsUnique();
 
             entity.Property(e => e.BrandId).HasColumnName("BRAND_ID");
             entity.Property(e => e.Bdescription)
@@ -54,11 +54,11 @@ public partial class NaimsdbContext : DbContext
 
         modelBuilder.Entity<Contact>(entity =>
         {
-            entity.HasKey(e => e.ContactId).HasName("PK__CONTACTS__99DE4258163D1280");
+            entity.HasKey(e => e.ContactId).HasName("PK__CONTACTS__99DE425824EDF05E");
 
             entity.ToTable("CONTACTS");
 
-            entity.HasIndex(e => e.ContactId, "UQ__CONTACTS__99DE4259CA242359").IsUnique();
+            entity.HasIndex(e => e.ContactId, "UQ__CONTACTS__99DE4259DE42EC5E").IsUnique();
 
             entity.Property(e => e.ContactId).HasColumnName("CONTACT_ID");
             entity.Property(e => e.Caddress)
@@ -85,11 +85,11 @@ public partial class NaimsdbContext : DbContext
 
         modelBuilder.Entity<Employee>(entity =>
         {
-            entity.HasKey(e => e.EmployeeId).HasName("PK__EMPLOYEE__CBA14F4850D5DD84");
+            entity.HasKey(e => e.EmployeeId).HasName("PK__EMPLOYEE__CBA14F4829AE1541");
 
             entity.ToTable("EMPLOYEES");
 
-            entity.HasIndex(e => e.EmployeeId, "UQ__EMPLOYEE__CBA14F49A907D88D").IsUnique();
+            entity.HasIndex(e => e.EmployeeId, "UQ__EMPLOYEE__CBA14F49F37FF8FD").IsUnique();
 
             entity.Property(e => e.EmployeeId).HasColumnName("EMPLOYEE_ID");
             entity.Property(e => e.EComissionPerc)
@@ -120,11 +120,11 @@ public partial class NaimsdbContext : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.OrderId).HasName("PK__ORDERS__460A94648193EE99");
+            entity.HasKey(e => e.OrderId).HasName("PK__ORDERS__460A9464A3C17516");
 
             entity.ToTable("ORDERS");
 
-            entity.HasIndex(e => e.OrderId, "UQ__ORDERS__460A94656BC20471").IsUnique();
+            entity.HasIndex(e => e.OrderId, "UQ__ORDERS__460A9465DF14307F").IsUnique();
 
             entity.Property(e => e.OrderId).HasColumnName("ORDER_ID");
             entity.Property(e => e.ContactId).HasColumnName("CONTACT_ID");
@@ -142,11 +142,11 @@ public partial class NaimsdbContext : DbContext
 
         modelBuilder.Entity<Product>(entity =>
         {
-            entity.HasKey(e => e.ProductId).HasName("PK__PRODUCTS__52B417630E111965");
+            entity.HasKey(e => e.ProductId).HasName("PK__PRODUCTS__52B417637B7F9857");
 
             entity.ToTable("PRODUCTS");
 
-            entity.HasIndex(e => e.ProductId, "UQ__PRODUCTS__52B417622F2A4671").IsUnique();
+            entity.HasIndex(e => e.ProductId, "UQ__PRODUCTS__52B41762BD59B549").IsUnique();
 
             entity.Property(e => e.ProductId).HasColumnName("PRODUCT_ID");
             entity.Property(e => e.Barcode).HasColumnName("BARCODE");
@@ -187,11 +187,11 @@ public partial class NaimsdbContext : DbContext
 
         modelBuilder.Entity<ProductsOrder>(entity =>
         {
-            entity.HasKey(e => e.ProductorderId).HasName("PK__PRODUCTS__2C75A0F2C46B7F4D");
+            entity.HasKey(e => e.ProductorderId).HasName("PK__PRODUCTS__2C75A0F23787F313");
 
             entity.ToTable("PRODUCTS_ORDERS");
 
-            entity.HasIndex(e => e.ProductorderId, "UQ__PRODUCTS__2C75A0F382578490").IsUnique();
+            entity.HasIndex(e => e.ProductorderId, "UQ__PRODUCTS__2C75A0F33B8A79F3").IsUnique();
 
             entity.Property(e => e.ProductorderId).HasColumnName("PRODUCTORDER_ID");
             entity.Property(e => e.OrderId).HasColumnName("ORDER_ID");
