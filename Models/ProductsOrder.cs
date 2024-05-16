@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace NAIMS.Models;
@@ -12,4 +12,5 @@ public partial class ProductsOrder
     public int ProductId { get; set; }
 
     public int Qty { get; set; }
+
 }

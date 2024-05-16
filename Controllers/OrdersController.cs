@@ -17,23 +17,29 @@ namespace NAIMS.Controllers
     {
       _context = context;
     }
+
     public IActionResult AddProducts()
     {
-      var emp = _context.Employees.Select(e => new
-      {
-        e.EmployeeId,
-        FullName = $"{e.EFirstname} {e.ELastname}"
-      });
+      PopulateViewBags();
 
-      ViewData["EmployeeId"] = new SelectList(emp, "EmployeeId", "FullName");
-      ViewData["ContactId"] = new SelectList(_context.Contacts, "ContactId", "Cname");
+      var products = _context.Products
+          .Include(p => p.Brand)
+          .ToList();
+
+      var productSelectList = products.Select(p => new SelectListItem
+      {
+        Value = p.ProductId.ToString(),
+        Text = (p.Brand != null ? p.Brand.Bname + " - " : "") + p.Pname + (p.Size != null ? " (" + p.Size + ")" : "")
+      }).ToList();
+
+      var productPrices = products.ToDictionary(p => p.ProductId, p => p.Price);
 
       var viewModel = new AddProductsViewModel
       {
-        Products = _context.Products.ToList(),
-        //Orders = _context.Orders.ToList(),
+        Products = productSelectList,
+        ProductPrices = productPrices,
         Order = new Order(),
-        ProductsOrder = new ProductsOrder()
+        ProductsOrders = new List<ProductsOrder> { new ProductsOrder() }
       };
 
       return View(viewModel);
@@ -43,26 +49,52 @@ namespace NAIMS.Controllers
     [ValidateAntiForgeryToken]
     public async Task<ActionResult> AddProducts(AddProductsViewModel viewModel)
     {
+      // Manually remove validation for Products and ProductPrices
+      ModelState.Remove("Products");
+      ModelState.Remove("ProductPrices");
+
       if (ModelState.IsValid)
       {
+        viewModel.Order.OrderDate = DateOnly.FromDateTime(DateTime.Now); // Set the order date to the current date
+
         _context.Add(viewModel.Order);
         await _context.SaveChangesAsync();
 
-        viewModel.ProductsOrder.OrderId = viewModel.Order.OrderId;
+        foreach (var productsOrder in viewModel.ProductsOrders)
+        {
+          productsOrder.OrderId = viewModel.Order.OrderId;
+          _context.Add(productsOrder);
 
-        _context.Add(viewModel.ProductsOrder);
-
-        var product = await _context.Products.FindAsync(viewModel.ProductsOrder.ProductId);
-
-        product.LocalQty -= viewModel.ProductsOrder.Qty;
-
-        _context.Products.Update(product);
+          var product = await _context.Products.FindAsync(productsOrder.ProductId);
+          product.LocalQty -= productsOrder.Qty;
+          _context.Products.Update(product);
+        }
 
         await _context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
       }
 
+      // Re-populate the Products and ProductPrices properties in case of validation failure
+      PopulateViewBags();
+
+      var products = _context.Products
+          .Include(p => p.Brand)
+          .ToList();
+
+      viewModel.Products = products.Select(p => new SelectListItem
+      {
+        Value = p.ProductId.ToString(),
+        Text = (p.Brand != null ? p.Brand.Bname + " - " : "") + p.Pname + (p.Size != null ? " (" + p.Size + ")" : "")
+      }).ToList();
+
+      viewModel.ProductPrices = products.ToDictionary(p => p.ProductId, p => p.Price);
+
+      return View(viewModel);
+    }
+
+    private void PopulateViewBags()
+    {
       var emp = _context.Employees.Select(e => new
       {
         e.EmployeeId,
@@ -71,11 +103,6 @@ namespace NAIMS.Controllers
 
       ViewData["EmployeeId"] = new SelectList(emp, "EmployeeId", "FullName");
       ViewData["ContactId"] = new SelectList(_context.Contacts, "ContactId", "Cname");
-
-      viewModel.Products = _context.Products.ToList();
-      //viewModel.Orders = _context.Orders.ToList();
-
-      return View(viewModel);
     }
 
     // GET: Orders
