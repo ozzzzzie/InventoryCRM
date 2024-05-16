@@ -14,5 +14,7 @@ namespace NAIMS.Models
 
     [BindNever]
     public Dictionary<int, double> ProductPrices { get; set; }
+
+    public List<int> ProductsOrdersToRemove { get; set; } = new List<int>();
   }
 }

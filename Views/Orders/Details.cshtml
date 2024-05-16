@@ -1,36 +1,39 @@
-﻿@model NAIMS.Models.Order
+@model NAIMS.Models.Order
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Order Details";
 }
 
-<h1>Details</h1>
+<h1>Order Details</h1>
 
-<div>
-    <h4>Order</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OrderDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrderDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Contact)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Contact.ContactId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Employee)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Employee.EmployeeId)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.OrderId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="card">
+    <div class="card-header">
+        Order #@Model.OrderId
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">Order Date: @Model.OrderDate.ToString("yyyy-MM-dd")</h5>
+        <p class="card-text">Contact: @Model.Contact?.Cname</p>
+        <p class="card-text">Employee: @Model.Employee?.EFirstname @Model.Employee?.ELastname</p>
+        <h5 class="card-title">Products</h5>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var po in Model.ProductsOrders)
+                {
+                    <tr>
+                        <td>@(po.Product.Brand?.Bname + " - " + po.Product.Pname + " (" + po.Product.Size + ")")</td>
+                        <td>@po.Qty</td>
+                        <td>@po.Product.Price</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <a href="javascript:window.print()" class="btn btn-primary">Print</a>
+    </div>
 </div>

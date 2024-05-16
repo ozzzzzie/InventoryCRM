@@ -1,41 +1,156 @@
-﻿@model NAIMS.Models.Order
+@using Newtonsoft.Json
+@model NAIMS.Models.AddProductsViewModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Order";
 }
 
-<h1>Edit</h1>
+<h1>Edit Order</h1>
 
-<h4>Order</h4>
-<hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="OrderId" />
-            <div class="form-group">
-                <label asp-for="ContactId" class="control-label"></label>
-                <select asp-for="ContactId" class="form-control" asp-items="ViewBag.ContactId"></select>
-                <span asp-validation-for="ContactId" class="text-danger"></span>
+    <div class="col-md-12">
+        <form asp-action="Edit" method="post">
+            <input type="hidden" asp-for="Order.OrderId" />
+
+            <div class="card mb-3">
+                <div class="card-header">
+                    Order Details
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label asp-for="Order.EmployeeId" class="control-label"></label>
+                        <select asp-for="Order.EmployeeId" class="form-control" asp-items="ViewBag.EmployeeId"></select>
+                        <span asp-validation-for="Order.EmployeeId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Order.OrderDate" class="control-label"></label>
+                        <input asp-for="Order.OrderDate" class="form-control" type="date" />
+                        <span asp-validation-for="Order.OrderDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Order.ContactId" class="control-label"></label>
+                        <select asp-for="Order.ContactId" class="form-control" asp-items="ViewBag.ContactId"></select>
+                        <span asp-validation-for="Order.ContactId" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="OrderDate" class="control-label"></label>
-                <input asp-for="OrderDate" class="form-control" />
-                <span asp-validation-for="OrderDate" class="text-danger"></span>
+
+            <div class="card mb-3">
+                <div class="card-header">
+                    Product Details
+                </div>
+                <div class="card-body">
+                    <div id="products-container">
+                        @for (int i = 0; i < Model.ProductsOrders.Count; i++)
+                        {
+                            <div class="product-entry" data-index="@i">
+                                <input type="hidden" name="ProductsOrders[@i].ProductorderId" value="@Model.ProductsOrders[i].ProductorderId" />
+                                <div class="form-group">
+                                    <label asp-for="ProductsOrders[i].ProductId" class="control-label"></label>
+                                    <select asp-for="ProductsOrders[i].ProductId" class="form-control product-select" asp-items="@(new SelectList(Model.Products, "Value", "Text"))">
+                                    </select>
+                                    <span asp-validation-for="ProductsOrders[i].ProductId" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="ProductsOrders[i].Qty" class="control-label"></label>
+                                    <input asp-for="ProductsOrders[i].Qty" class="form-control" />
+                                    <span asp-validation-for="ProductsOrders[i].Qty" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Price</label>
+                                    <input type="text" class="form-control product-price" value="@Model.ProductPrices[Model.ProductsOrders[i].ProductId]" readonly />
+                                </div>
+                                <button type="button" class="btn btn-danger remove-product">Remove</button>
+                            </div>
+                        }
+                    </div>
+
+                    <button type="button" id="add-product" class="btn btn-secondary">Add Product</button>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="EmployeeId" class="control-label"></label>
-                <select asp-for="EmployeeId" class="form-control" asp-items="ViewBag.EmployeeId"></select>
-                <span asp-validation-for="EmployeeId" class="text-danger"></span>
-            </div>
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
+
+        <script>
+            var productOptions = @Html.Raw(JsonConvert.SerializeObject(Model.Products));
+            var productPrices = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ProductPrices));
+
+            document.getElementById('add-product').addEventListener('click', function () {
+                var container = document.getElementById('products-container');
+                var index = container.children.length;
+
+                var optionsHtml = '';
+                productOptions.forEach(function (option) {
+                    optionsHtml += '<option value="' + option.Value + '">' + option.Text + '</option>';
+                });
+
+                var productEntry = `
+                                <div class="product-entry" data-index="${index}">
+                                    <input type="hidden" name="ProductsOrders[${index}].ProductorderId" value="0" />
+                                    <div class="form-group">
+                                        <label for="ProductsOrders_${index}__ProductId" class="control-label">Product</label>
+                                        <select name="ProductsOrders[${index}].ProductId" class="form-control product-select">
+                                            ${optionsHtml}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="ProductsOrders_${index}__Qty" class="control-label">Quantity</label>
+                                        <input name="ProductsOrders[${index}].Qty" class="form-control" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label">Price</label>
+                                        <input type="text" class="form-control product-price" readonly />
+                                    </div>
+                                    <button type="button" class="btn btn-danger remove-product">Remove</button>
+                                </div>
+                            `;
+
+                container.insertAdjacentHTML('beforeend', productEntry);
+                attachPriceUpdateEvent(container.lastElementChild.querySelector('.product-select'));
+                attachRemoveEvent(container.lastElementChild.querySelector('.remove-product'));
+            });
+
+            function attachPriceUpdateEvent(selectElement) {
+                selectElement.addEventListener('change', function (event) {
+                    var selectedProductId = event.target.value;
+                    var productPriceInput = event.target.closest('.product-entry').querySelector('.product-price');
+
+                    if (productPrices[selectedProductId] !== undefined) {
+                        productPriceInput.value = productPrices[selectedProductId];
+                    } else {
+                        productPriceInput.value = '';
+                    }
+                });
+            }
+
+            function attachRemoveEvent(buttonElement) {
+                buttonElement.addEventListener('click', function () {
+                    var productEntry = buttonElement.closest('.product-entry');
+                    var productIdInput = productEntry.querySelector('input[name^="ProductsOrders"][name$="ProductorderId"]');
+                    var productId = productIdInput.value;
+
+                    if (productId !== "0") {
+                        var inputToRemove = document.createElement('input');
+                        inputToRemove.type = 'hidden';
+                        inputToRemove.name = 'ProductsOrdersToRemove';
+                        inputToRemove.value = productId;
+                        document.querySelector('form').appendChild(inputToRemove);
+                    }
+
+                    productEntry.remove();
+                });
+            }
+
+            document.querySelectorAll('.product-select').forEach(function (selectElement) {
+                attachPriceUpdateEvent(selectElement);
+            });
+
+            document.querySelectorAll('.remove-product').forEach(function (buttonElement) {
+                attachRemoveEvent(buttonElement);
+            });
+        </script>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-

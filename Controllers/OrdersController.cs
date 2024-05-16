@@ -18,40 +18,48 @@ namespace NAIMS.Controllers
       _context = context;
     }
 
-    public IActionResult AddProducts()
-    {
-      PopulateViewBags();
+    // GET: Orders/AddProducts
+public IActionResult AddProducts()
+        {
+            PopulateViewBags();
 
-      var products = _context.Products
-          .Include(p => p.Brand)
-          .ToList();
+            var products = _context.Products
+                .Include(p => p.Brand)
+                .ToList();
 
-      var productSelectList = products.Select(p => new SelectListItem
-      {
-        Value = p.ProductId.ToString(),
-        Text = (p.Brand != null ? p.Brand.Bname + " - " : "") + p.Pname + (p.Size != null ? " (" + p.Size + ")" : "")
-      }).ToList();
+            var productSelectList = products.Select(p => new SelectListItem
+            {
+                Value = p.ProductId.ToString(),
+                Text = (p.Brand != null ? p.Brand.Bname + " - " : "") + p.Pname + (p.Size != null ? " (" + p.Size + ")" : "")
+            }).ToList();
 
-      var productPrices = products.ToDictionary(p => p.ProductId, p => p.Price);
+            var productPrices = products.ToDictionary(p => p.ProductId, p => p.Price);
 
-      var viewModel = new AddProductsViewModel
-      {
-        Products = productSelectList,
-        ProductPrices = productPrices,
-        Order = new Order(),
-        ProductsOrders = new List<ProductsOrder> { new ProductsOrder() }
-      };
+            var viewModel = new AddProductsViewModel
+            {
+                Products = productSelectList,
+                ProductPrices = productPrices,
+                Order = new Order(),
+                ProductsOrders = new List<ProductsOrder> { new ProductsOrder() }
+            };
 
-      return View(viewModel);
-    }
+            return View(viewModel);
+        }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<ActionResult> AddProducts(AddProductsViewModel viewModel)
+    public async Task<IActionResult> AddProducts(AddProductsViewModel viewModel)
     {
       // Manually remove validation for Products and ProductPrices
       ModelState.Remove("Products");
       ModelState.Remove("ProductPrices");
+
+      // Manually remove validation for navigation properties in ProductsOrders
+      foreach (var productsOrder in viewModel.ProductsOrders)
+      {
+        ModelState.Remove($"ProductsOrders[{viewModel.ProductsOrders.IndexOf(productsOrder)}].Order");
+        ModelState.Remove($"ProductsOrders[{viewModel.ProductsOrders.IndexOf(productsOrder)}].Product");
+      }
 
       if (ModelState.IsValid)
       {
@@ -94,36 +102,38 @@ namespace NAIMS.Controllers
     }
 
     private void PopulateViewBags()
-    {
-      var emp = _context.Employees.Select(e => new
-      {
-        e.EmployeeId,
-        FullName = $"{e.EFirstname} {e.ELastname}"
-      });
+        {
+            var emp = _context.Employees.Select(e => new
+            {
+                e.EmployeeId,
+                FullName = $"{e.EFirstname} {e.ELastname}"
+            });
 
-      ViewData["EmployeeId"] = new SelectList(emp, "EmployeeId", "FullName");
-      ViewData["ContactId"] = new SelectList(_context.Contacts, "ContactId", "Cname");
-    }
+            ViewData["EmployeeId"] = new SelectList(emp, "EmployeeId", "FullName");
+            ViewData["ContactId"] = new SelectList(_context.Contacts, "ContactId", "Cname");
+        }
 
     // GET: Orders
     public async Task<IActionResult> Index()
     {
-      var naimsdbContext = _context.Orders.Include(o => o.Contact).Include(o => o.Employee);
-      return View(await naimsdbContext.ToListAsync());
+      var orders = await _context.Orders
+          .Include(o => o.Contact)
+          .Include(o => o.Employee)
+          .ToListAsync();
+      return View(orders);
     }
 
     // GET: Orders/Details/5
-    public async Task<IActionResult> Details(int? id)
+    public async Task<IActionResult> Details(int id)
     {
-      if (id == null)
-      {
-        return NotFound();
-      }
-
       var order = await _context.Orders
           .Include(o => o.Contact)
           .Include(o => o.Employee)
-          .FirstOrDefaultAsync(m => m.OrderId == id);
+          .Include(o => o.ProductsOrders)
+              .ThenInclude(po => po.Product)
+                  .ThenInclude(p => p.Brand)
+          .FirstOrDefaultAsync(o => o.OrderId == id);
+
       if (order == null)
       {
         return NotFound();
@@ -131,6 +141,7 @@ namespace NAIMS.Controllers
 
       return View(order);
     }
+
 
     // GET: Orders/Create
     public IActionResult Create()
@@ -166,8 +177,6 @@ namespace NAIMS.Controllers
       ViewData["EmployeeId"] = new SelectList(_context.Employees, "EmployeeId", "EmployeeId", order.EmployeeId);
       return View(order);
     }
-
-    // GET: Orders/Edit/5
     public async Task<IActionResult> Edit(int? id)
     {
       if (id == null)
@@ -175,38 +184,112 @@ namespace NAIMS.Controllers
         return NotFound();
       }
 
-      var order = await _context.Orders.FindAsync(id);
+      var order = await _context.Orders
+          .Include(o => o.ProductsOrders)
+          .FirstOrDefaultAsync(o => o.OrderId == id);
+
       if (order == null)
       {
         return NotFound();
       }
-      ViewData["ContactId"] = new SelectList(_context.Contacts, "ContactId", "ContactId", order.ContactId);
-      ViewData["EmployeeId"] = new SelectList(_context.Employees, "EmployeeId", "EmployeeId", order.EmployeeId);
-      return View(order);
+
+      PopulateViewBags();
+
+      var products = _context.Products
+          .Include(p => p.Brand)
+          .ToList();
+
+      var productSelectList = products.Select(p => new SelectListItem
+      {
+        Value = p.ProductId.ToString(),
+        Text = (p.Brand != null ? p.Brand.Bname + " - " : "") + p.Pname + (p.Size != null ? " (" + p.Size + ")" : "")
+      }).ToList();
+
+      var productPrices = products.ToDictionary(p => p.ProductId, p => p.Price);
+
+      var viewModel = new AddProductsViewModel
+      {
+        Order = order,
+        Products = productSelectList,
+        ProductPrices = productPrices,
+        ProductsOrders = order.ProductsOrders.ToList()
+      };
+
+      return View(viewModel);
     }
 
-    // POST: Orders/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("OrderId,ContactId,OrderDate,EmployeeId")] Order order)
+    public async Task<IActionResult> Edit(int id, AddProductsViewModel viewModel)
     {
-      if (id != order.OrderId)
+      if (id != viewModel.Order.OrderId)
       {
         return NotFound();
+      }
+
+      // Manually remove validation for Products and ProductPrices
+      ModelState.Remove("Products");
+      ModelState.Remove("ProductPrices");
+
+      // Manually remove validation for navigation properties in ProductsOrders
+      foreach (var productsOrder in viewModel.ProductsOrders)
+      {
+        ModelState.Remove($"ProductsOrders[{viewModel.ProductsOrders.IndexOf(productsOrder)}].Order");
+        ModelState.Remove($"ProductsOrders[{viewModel.ProductsOrders.IndexOf(productsOrder)}].Product");
       }
 
       if (ModelState.IsValid)
       {
         try
         {
-          _context.Update(order);
+          _context.Update(viewModel.Order);
+          await _context.SaveChangesAsync();
+
+          foreach (var productsOrder in viewModel.ProductsOrders)
+          {
+            var existingProductOrder = await _context.ProductsOrders
+                .FirstOrDefaultAsync(po => po.ProductorderId == productsOrder.ProductorderId);
+
+            if (existingProductOrder != null)
+            {
+              existingProductOrder.Qty = productsOrder.Qty;
+              _context.Update(existingProductOrder);
+            }
+            else
+            {
+              productsOrder.OrderId = viewModel.Order.OrderId;
+              _context.Add(productsOrder);
+            }
+
+            var product = await _context.Products.FindAsync(productsOrder.ProductId);
+            product.LocalQty -= productsOrder.Qty;
+            _context.Products.Update(product);
+          }
+
+          if (viewModel.ProductsOrdersToRemove != null)
+          {
+            foreach (var productOrderId in viewModel.ProductsOrdersToRemove)
+            {
+              var productOrder = await _context.ProductsOrders.FindAsync(productOrderId);
+              if (productOrder != null)
+              {
+                _context.ProductsOrders.Remove(productOrder);
+
+                var product = await _context.Products.FindAsync(productOrder.ProductId);
+                if (product != null)
+                {
+                  product.LocalQty += productOrder.Qty;
+                  _context.Products.Update(product);
+                }
+              }
+            }
+          }
+
           await _context.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException)
         {
-          if (!OrderExists(order.OrderId))
+          if (!OrderExists(viewModel.Order.OrderId))
           {
             return NotFound();
           }
@@ -215,13 +298,34 @@ namespace NAIMS.Controllers
             throw;
           }
         }
+
         return RedirectToAction(nameof(Index));
       }
-      ViewData["ContactId"] = new SelectList(_context.Contacts, "ContactId", "ContactId", order.ContactId);
-      ViewData["EmployeeId"] = new SelectList(_context.Employees, "EmployeeId", "EmployeeId", order.EmployeeId);
-      return View(order);
+
+      PopulateViewBags();
+
+      var products = _context.Products
+          .Include(p => p.Brand)
+          .ToList();
+
+      viewModel.Products = products.Select(p => new SelectListItem
+      {
+        Value = p.ProductId.ToString(),
+        Text = (p.Brand != null ? p.Brand.Bname + " - " : "") + p.Pname + (p.Size != null ? " (" + p.Size + ")" : "")
+      }).ToList();
+
+      viewModel.ProductPrices = products.ToDictionary(p => p.ProductId, p => p.Price);
+
+      return View(viewModel);
     }
 
+    private bool OrderExists(int id)
+    {
+      return _context.Orders.Any(e => e.OrderId == id);
+    }
+
+
+    // GET: Orders/Delete/5
     // GET: Orders/Delete/5
     public async Task<IActionResult> Delete(int? id)
     {
@@ -233,7 +337,10 @@ namespace NAIMS.Controllers
       var order = await _context.Orders
           .Include(o => o.Contact)
           .Include(o => o.Employee)
+          .Include(o => o.ProductsOrders)
+              .ThenInclude(po => po.Product)
           .FirstOrDefaultAsync(m => m.OrderId == id);
+
       if (order == null)
       {
         return NotFound();
@@ -247,19 +354,25 @@ namespace NAIMS.Controllers
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-      var order = await _context.Orders.FindAsync(id);
+      var order = await _context.Orders
+          .Include(o => o.ProductsOrders)
+          .FirstOrDefaultAsync(o => o.OrderId == id);
+
       if (order != null)
       {
+        foreach (var productsOrder in order.ProductsOrders)
+        {
+          var product = await _context.Products.FindAsync(productsOrder.ProductId);
+          product.LocalQty += productsOrder.Qty;
+          _context.Products.Update(product);
+        }
+
         _context.Orders.Remove(order);
+        await _context.SaveChangesAsync();
       }
 
-      await _context.SaveChangesAsync();
       return RedirectToAction(nameof(Index));
     }
 
-    private bool OrderExists(int id)
-    {
-      return _context.Orders.Any(e => e.OrderId == id);
-    }
   }
 }
