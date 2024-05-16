@@ -4,3 +4,341 @@
 
 <h1>Admin Dashboard</h1>
 
+@model List<NAIMS.Models.Employee>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Employee Breakdown</h4>
+    <a href="@Url.Action("Create", "Employees")" class="btn btn-primary">
+        Add Employee
+    </a>
+</div>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <h5>Managers</h5>
+        @if (Model.Any(e => e.ERole == "Manager"))
+        {
+            <div class="row">
+                @foreach (var employee in Model.Where(e => e.ERole == "Manager"))
+                {
+                    @if (Model.Where(e => e.ERole == "Manager").Count() <= 2)
+                    {
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5>@employee.EFirstname @employee.ELastname</h5>
+                                        </div>
+                                        <div class="d-flex justify-content-end align-items-end gap-2">
+                                            <a href="@Url.Action("Details", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-dark">
+                                                View All Details
+                                            </a>
+                                            <a href="@Url.Action("Edit", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-primary">
+                                                Manage
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <p>
+                                        Role: @employee.ERole
+                                    </p>
+                                    <p>
+                                        Email: @employee.EEmail
+                                    </p>
+                                    <p>Target: @employee.ETarget</p>
+                                    <p>
+                                        Commission Rate: @employee.EComissionPerc %
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5>@employee.EFirstname @employee.ELastname</h5>
+                                        </div>
+                                        <div class="d-flex justify-content-end align-items-end gap-2">
+                                            <a href="@Url.Action("Details", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-dark">
+                                                View All Details
+                                            </a>
+                                            <a href="@Url.Action("Edit", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-primary">
+                                                Manage
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <p>
+                                        Role: @employee.ERole
+                                    </p>
+                                    <p>
+                                        Email: @employee.EEmail
+                                    </p>
+                                    <p>Target: @employee.ETarget</p>
+                                    <p>
+                                        Commission Rate: @employee.EComissionPerc %
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        }
+        else
+        {
+            <div>No users found</div>
+        }
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-md-12">
+        <h5>
+            Sales Representatives
+        </h5>
+        @if (Model.Any(e => e.ERole == "Sales"))
+        {
+            <div class="row">
+                @foreach (var employee in Model.Where(e => e.ERole == "Sales"))
+                {
+                    @if (Model.Where(e => e.ERole == "Sales").Count() <= 2)
+                    {
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5>@employee.EFirstname @employee.ELastname</h5>
+                                        </div>
+                                        <div class="d-flex justify-content-end align-items-end gap-2">
+                                            <a href="@Url.Action("Details", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-dark">
+                                                View All Details
+                                            </a>
+                                            <a href="@Url.Action("Edit", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-primary">
+                                                Manage
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <p>
+                                        Role: @employee.ERole
+                                    </p>
+                                    <p>
+                                        Email: @employee.EEmail
+                                    </p>
+                                    <p>Target: @employee.ETarget</p>
+                                    <p>
+                                        Commission Rate: @employee.EComissionPerc %
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5>@employee.EFirstname @employee.ELastname</h5>
+                                        </div>
+                                        <div class="d-flex justify-content-end align-items-end gap-2">
+                                            <a href="@Url.Action("Details", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-dark">
+                                                View All Details
+                                            </a>
+                                            <a href="@Url.Action("Edit", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-primary">
+                                                Manage
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <p>
+                                        Role: @employee.ERole
+                                    </p>
+                                    <p>
+                                        Email: @employee.EEmail
+                                    </p>
+                                    <p>Target: @employee.ETarget</p>
+                                    <p>
+                                        Commission Rate: @employee.EComissionPerc %
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        }
+        else
+        {
+            <div>No users found</div>
+        }
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-md-12">
+        <h5>Administrators</h5>
+        @if (Model.Any(e => e.ERole == "SuperAdmin"))
+        {
+            <div class="row">
+                @foreach (var employee in Model.Where(e => e.ERole == "SuperAdmin"))
+                {
+                    @if (Model.Where(e => e.ERole == "SuperAdmin").Count() <= 2)
+                    {
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5>@employee.EFirstname @employee.ELastname</h5>
+                                        </div>
+                                        <div class="d-flex justify-content-end align-items-end gap-2">
+                                            <a href="@Url.Action("Details", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-dark">
+                                                View All Details
+                                            </a>
+                                            <a href="@Url.Action("Edit", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-primary">
+                                                Manage
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <p>
+                                        Role: @employee.ERole
+                                    </p>
+                                    <p>
+                                        Email: @employee.EEmail
+                                    </p>
+                                    <p>Target: @employee.ETarget</p>
+                                    <p>
+                                        Commission Rate: @employee.EComissionPerc %
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5>@employee.EFirstname @employee.ELastname</h5>
+                                        </div>
+                                        <div class="d-flex justify-content-end align-items-end gap-2">
+                                            <a href="@Url.Action("Details", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-dark">
+                                                View All Details
+                                            </a>
+                                            <a href="@Url.Action("Edit", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-primary">
+                                                Manage
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <p>
+                                        Role: @employee.ERole
+                                    </p>
+                                    <p>
+                                        Email: @employee.EEmail
+                                    </p>
+                                    <p>Target: @employee.ETarget</p>
+                                    <p>
+                                        Commission Rate: @employee.EComissionPerc %
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        }
+        else
+        {
+            <div>No users found</div>
+        }
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-md-12">
+        <h5>Others</h5>
+        @if (Model.Any(e => e.ERole == "Viewer"))
+        {
+            <div class="row">
+                @foreach (var employee in Model.Where(e => e.ERole == "Viewer"))
+                {
+                    @if (Model.Where(e => e.ERole == "Viewer").Count() <= 2)
+                    {
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5>@employee.EFirstname @employee.ELastname</h5>
+                                        </div>
+                                        <div class="d-flex justify-content-end align-items-end gap-2">
+                                            <a href="@Url.Action("Details", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-dark">
+                                                View All Details
+                                            </a>
+                                            <a href="@Url.Action("Edit", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-primary">
+                                                Manage
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <p>
+                                        Role: @employee.ERole
+                                    </p>
+                                    <p>
+                                        Email: @employee.EEmail
+                                    </p>
+                                    <p>Target: @employee.ETarget</p>
+                                    <p>
+                                        Commission Rate: @employee.EComissionPerc %
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5>@employee.EFirstname @employee.ELastname</h5>
+                                        </div>
+                                        <div class="d-flex justify-content-end align-items-end gap-2">
+                                            <a href="@Url.Action("Details", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-dark">
+                                                View All Details
+                                            </a>
+                                            <a href="@Url.Action("Edit", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-primary">
+                                                Manage
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <p>
+                                        Role: @employee.ERole
+                                    </p>
+                                    <p>
+                                        Email: @employee.EEmail
+                                    </p>
+                                    <p>Target: @employee.ETarget</p>
+                                    <p>
+                                        Commission Rate: @employee.EComissionPerc %
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        }
+        else
+        {
+            <div>No users found</div>
+        }
+    </div>
+</div>

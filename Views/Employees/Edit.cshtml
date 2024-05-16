@@ -1,61 +1,87 @@
-﻿@model NAIMS.Models.Employee
+@model NAIMS.Models.Employee
 
 @{
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
-
-<h4>Employee</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="EmployeeId" />
-            <div class="form-group">
-                <label asp-for="EFirstname" class="control-label"></label>
-                <input asp-for="EFirstname" class="form-control" />
-                <span asp-validation-for="EFirstname" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ELastname" class="control-label"></label>
-                <input asp-for="ELastname" class="form-control" />
-                <span asp-validation-for="ELastname" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ERole" class="control-label"></label>
-                <input asp-for="ERole" class="form-control" />
-                <span asp-validation-for="ERole" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EEmail" class="control-label"></label>
-                <input asp-for="EEmail" class="form-control" />
-                <span asp-validation-for="EEmail" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EPhonenumber" class="control-label"></label>
-                <input asp-for="EPhonenumber" class="form-control" />
-                <span asp-validation-for="EPhonenumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ETarget" class="control-label"></label>
-                <input asp-for="ETarget" class="form-control" />
-                <span asp-validation-for="ETarget" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EComissionPerc" class="control-label"></label>
-                <input asp-for="EComissionPerc" class="form-control" />
-                <span asp-validation-for="EComissionPerc" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+<a asp-action="Index" type="button" class="btn btn-dark">
+    <i class="tf-icons bx bx-arrow-back"></i> Back
+</a>
+<br />
+<br />
+<div class="col-xxl">
+    <div class="card mb-4">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">Edit </h5> <small class="text-muted float-end">@Html.DisplayFor(model => model.EFirstname) @Html.DisplayFor(model => model.ELastname)</small>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="EmployeeId" />
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-Cname">First Name</label>
+                    <div class="col-sm-10">
+                        <input asp-for="EFirstname" type="text" class="form-control" id="basic-default-EFirstname" />
+                        <span asp-validation-for="EFirstname" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-Cname">Last Name</label>
+                    <div class="col-sm-10">
+                        <input asp-for="ELastname" type="text" class="form-control" id="basic-default-ELastname" />
+                        <span asp-validation-for="ELastname" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-Ctype">Type</label>
+                    <div class="col-sm-10">
+                        <select asp-for="ERole" class="form-select" class="form-control" id="exampleFormControlSelect1" aria-label="Default select example">
+                            <option value="Manager">Manager</option>
+                            <option value="Sales">Sales Representative</option>
+                            <option value="SuperAdmin">Super Administrator</option>
+                            <option value="Viewer">Viewer</option>
+                        </select>
+                        <span asp-validation-for="ERole" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-email">Email</label>
+                    <div class="col-sm-10">
+                        <div class="input-group input-group-merge">
+                            <input asp-for="EEmail" type="text" id="basic-default-email" class="form-control" placeholder="john.doe@example.com" aria-label="john.doe" aria-describedby="basic-default-email2" />
+                            <span asp-validation-for="EEmail" class="input-group-text" id="basic-default-email2"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-PhoneNumber">Phone Number</label>
+                    <div class="col-sm-10">
+                        <input asp-for="EPhonenumber" type="text" class="form-control" id="basic-default-EPhonenumber" />
+                        <span asp-validation-for="EPhonenumber" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-PhoneNumber">Target</label>
+                    <div class="col-sm-10">
+                        <input asp-for="ETarget" type="text" class="form-control" id="basic-default-ETarget" />
+                        <span asp-validation-for="ETarget" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" for="basic-default-PhoneNumber">Comission Rate</label>
+                    <div class="col-sm-10">
+                        <input asp-for="EComissionPerc" type="text" class="form-control" id="basic-default-ECommissionPerc" />
+                        <span asp-validation-for="EComissionPerc" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row justify-content-end">
+                    <div class="col-sm-10">
+                        <div class="form-group">
+                            <input type="submit" value="Save" class="btn btn-primary" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
