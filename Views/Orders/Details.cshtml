@@ -3,18 +3,40 @@
 @{
     ViewData["Title"] = "Order Details";
 }
+<a asp-action="Index" type="button" class="btn btn-dark">
+    <i class="tf-icons bx bx-arrow-back"></i> Back
+</a>
+<br />
+<div style="display: flex; justify-content: center; align-items: center;">
+    <h1>Order Details</h1>
+</div>
 
-<h1>Order Details</h1>
 
-<div class="card">
+
+<div class="form-group d-flex justify-content-end">
+    <a asp-action="Edit" asp-route-id="@Model.OrderId" class="btn btn-primary me-2">Edit</a>
+    <a asp-action="SalesInvoicePrint" asp-route-id="@Model.OrderId" class="btn btn-dark me-2" target="_blank">Print Invoice</a>
+</div>
+<br />
+<div class="card mb-3">
     <div class="card-header">
-        Order #@Model.OrderId
+        Order Details
     </div>
     <div class="card-body">
-        <h5 class="card-title">Order Date: @Model.OrderDate.ToString("yyyy-MM-dd")</h5>
-        <p class="card-text">Contact: @Model.Contact?.Cname</p>
-        <p class="card-text">Employee: @Model.Employee?.EFirstname @Model.Employee?.ELastname</p>
-        <h5 class="card-title">Products</h5>
+        <h5 class="card-title">Order #@Model.OrderId</h5>
+        <p class="card-text d-flex justify-content-between">
+            <span><strong>Order Date:</strong> @Model.OrderDate.ToString("yyyy-MM-dd")</span>
+            <span><strong>Sales Representative:</strong> @Model.Employee?.EFirstname @Model.Employee?.ELastname</span>
+        </p>
+        <p class="card-text"><strong>Customer:</strong> @Model.Contact?.Cname</p>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        Products
+    </div>
+    <div class="card-body">
         <table class="table">
             <thead>
                 <tr>
@@ -29,11 +51,58 @@
                     <tr>
                         <td>@(po.Product.Brand?.Bname + " - " + po.Product.Pname + " (" + po.Product.Size + ")")</td>
                         <td>@po.Qty</td>
-                        <td>@po.Product.Price</td>
+                        <td>@po.Product.Price.ToString("C")</td>
                     </tr>
                 }
             </tbody>
         </table>
-        <a href="javascript:window.print()" class="btn btn-primary">Print</a>
     </div>
 </div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        Order Summary
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Total Products:</strong> <span id="total-products">0</span></p>
+                <p><strong>Total Quantity:</strong> <span id="total-quantity">0</span></p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Total Price:</strong> <span id="total-price">0</span></p>
+                <p><strong>Total Tax (10%):</strong> <span id="total-tax">0</span></p>
+                <p><strong>Grand Total:</strong> <span id="grand-total">0</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    function updateOrderSummary() {
+        var totalProducts = @Model.ProductsOrders.Count();
+        var totalQuantity = @Model.ProductsOrders.Sum(po => po.Qty);
+        var totalPrice = @Model.ProductsOrders.Sum(po => po.Qty * po.Product.Price);
+        var totalTax = totalPrice * 0.1;
+        var grandTotal = totalPrice + totalTax;
+
+        document.getElementById('total-products').innerText = totalProducts;
+        document.getElementById('total-quantity').innerText = totalQuantity;
+        document.getElementById('total-price').innerText = totalPrice.toFixed(2);
+        document.getElementById('total-tax').innerText = totalTax.toFixed(2);
+        document.getElementById('grand-total').innerText = grandTotal.toFixed(2);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        updateOrderSummary();
+    });
+
+    function printDifferentPage() {
+        var newWindow = window.open('SalesInvoicePrint');
+        newWindow.onload = function () {
+            newWindow.print();
+        };
+    }
+</script>

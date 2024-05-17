@@ -1,35 +1,63 @@
 @model IEnumerable<NAIMS.Models.Order>
 
 @{
-    ViewData["Title"] = "Invoices";
+    ViewData["Title"] = "Sales Invoices";
 }
 
-<h1>Invoices</h1>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Order ID</th>
-            <th>Order Date</th>
-            <th>Contact</th>
-            <th>Employee</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var order in Model)
-        {
-            <tr>
-                <td>@order.OrderId</td>
-                <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
-                <td>@order.Contact?.Cname</td>
-                <td>@order.Employee?.EFirstname @order.Employee.ELastname</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@order.OrderId" class="btn btn-info">Details</a>
-                    <a asp-action="Edit" asp-route-id="@order.OrderId" class="btn btn-warning">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@order.OrderId" class="btn btn-danger">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<style>
+    .table-responsive.text-nowrap table {
+        font-size: 14px;
+    }
+</style>
+
+<h1>Sales Invoices</h1>
+
+<p align="right">
+    <a asp-action="AddProducts" class="btn btn-dark">new sales invoice</a>
+</p>
+
+<div class="card">
+    <div class="table-responsive text-nowrap">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Order Date</th>
+                    <th>Contact</th>
+                    <th>Employee</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model)
+                {
+                    <tr>
+                        <td>@order.OrderId</td>
+                        <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
+                        <td>@order.Contact?.Cname</td>
+                        <td>@order.Employee?.EFirstname @order.Employee.ELastname</td>
+                        <td>
+                            <div class="dropdown">
+                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" asp-action="Edit" asp-route-id="@order.OrderId">
+                                        <i class="bx bx-edit-alt me-1"></i> Edit
+                                    </a>
+                                    <a class="dropdown-item" asp-action="Details" asp-route-id="@order.OrderId">
+                                        <i class="bx bx-info-circle"></i> Details
+                                    </a>
+                                    <a class="dropdown-item" asp-action="Delete" asp-route-id="@order.OrderId">
+                                        <i class="bx bx-trash me-1"></i> Delete
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

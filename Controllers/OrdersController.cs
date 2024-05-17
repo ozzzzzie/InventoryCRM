@@ -63,7 +63,6 @@ public IActionResult AddProducts()
 
       if (ModelState.IsValid)
       {
-        viewModel.Order.OrderDate = DateOnly.FromDateTime(DateTime.Now); // Set the order date to the current date
 
         _context.Add(viewModel.Order);
         await _context.SaveChangesAsync();
@@ -133,6 +132,24 @@ public IActionResult AddProducts()
               .ThenInclude(po => po.Product)
                   .ThenInclude(p => p.Brand)
           .FirstOrDefaultAsync(o => o.OrderId == id);
+
+      if (order == null)
+      {
+        return NotFound();
+      }
+
+      return View(order);
+    }
+
+    public IActionResult SalesInvoicePrint(int id)
+    {
+      var order = _context.Orders
+          .Include(o => o.Contact)
+          .Include(o => o.Employee)
+          .Include(o => o.ProductsOrders)
+              .ThenInclude(po => po.Product)
+                  .ThenInclude(p => p.Brand)
+          .FirstOrDefault(o => o.OrderId == id);
 
       if (order == null)
       {

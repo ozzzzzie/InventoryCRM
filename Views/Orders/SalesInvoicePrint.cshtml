@@ -1,0 +1,145 @@
+@model NAIMS.Models.Order
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Sales Invoice";
+    double totalPrice = Model.ProductsOrders.Sum(po => po.Qty * po.Product.Price);
+    double totalTax = totalPrice * 0.1;
+    double grandTotal = totalPrice + totalTax;
+}
+
+<style>
+    .invoice-container {
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+        /* border: 1px solid #ccc; */
+    }
+
+    .invoice-header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+        .invoice-header .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .invoice-header .logo {
+            max-width: 150px;
+        }
+
+    .invoice-section {
+        margin-bottom: 20px;
+    }
+
+        .invoice-section table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .invoice-section th, .invoice-section td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+    .invoice-summary {
+        text-align: right;
+    }
+
+        .invoice-summary table {
+            width: auto;
+            float: right;
+            border-collapse: collapse;
+        }
+
+        .invoice-summary th, .invoice-summary td {
+            padding: 8px;
+        }
+
+    .no-border {
+        border: none !important;
+    }
+</style>
+
+<div class="invoice-container">
+    <div class="invoice-header">
+        <div class="logo-container">
+            <img src="/img/branding/logo.png" alt="Logo" class="logo">
+        </div>
+        <h1>Sales Invoice</h1>
+    </div>
+
+    <div class="invoice-section">
+        <table class="table table-borderless">
+            <tr>
+                <td><strong>Order ID:</strong></td>
+                <td>@Model.OrderId</td>
+            </tr>
+            <tr>
+                <td><strong>Order Date:</strong></td>
+                <td>@Model.OrderDate.ToString("yyyy-MM-dd")</td>
+            </tr>
+            <tr>
+                <td><strong>Customer:</strong></td>
+                <td>@Model.Contact?.Cname</td>
+            </tr>
+            <tr>
+                <td><strong>Sales Representative:</strong></td>
+                <td>@Model.Employee?.EFirstname @Model.Employee?.ELastname</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="invoice-section">
+        <h3>Product Details</h3>
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price (BHD)</th>
+                    <th>Total (BHD)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var po in Model.ProductsOrders)
+                {
+                    <tr>
+                        <td>@(po.Product.Brand?.Bname + " - " + po.Product.Pname + " (" + po.Product.Size + ")")</td>
+                        <td>@po.Qty</td>
+                        <td>@string.Format("{0:0.000}", po.Product.Price)</td>
+                        <td>@string.Format("{0:0.000}", po.Qty * po.Product.Price)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="invoice-summary">
+        <table class="table">
+            <tr class="no-border">
+                <th class="no-border">Total Products:</th>
+                <td class="no-border">@Model.ProductsOrders.Count()</td>
+            </tr>
+            <tr class="no-border">
+                <th class="no-border">Total Quantity:</th>
+                <td class="no-border">@Model.ProductsOrders.Sum(po => po.Qty)</td>
+            </tr>
+            <tr class="no-border">
+                <th class="no-border">Total Price (BHD):</th>
+                <td class="no-border">@string.Format("{0:0.000}", totalPrice)</td>
+            </tr>
+            <tr class="no-border">
+                <th class="no-border">Total Tax (10%) (BHD):</th>
+                <td class="no-border">@string.Format("{0:0.000}", totalTax)</td>
+            </tr>
+            <tr class="no-border">
+                <th class="no-border">Grand Total (BHD):</th>
+                <td class="no-border">@string.Format("{0:0.000}", grandTotal)</td>
+            </tr>
+        </table>
+    </div>
+</div>
