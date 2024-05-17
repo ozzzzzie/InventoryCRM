@@ -1,10 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace NAIMS.Models;
 
-public partial class NaimsdbContext : DbContext
+public partial class NaimsdbContext : IdentityDbContext<IdentityUser>
 {
     public NaimsdbContext()
     {
@@ -31,9 +33,12 @@ public partial class NaimsdbContext : DbContext
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=naimsdb;Trusted_Connection=True;");
 
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Brand>(entity =>
+    base.OnModelCreating(modelBuilder);
+
+    modelBuilder.Entity<Brand>(entity =>
         {
             entity.HasKey(e => e.BrandId).HasName("PK__BRANDS__F89D3409423E8CA7");
 

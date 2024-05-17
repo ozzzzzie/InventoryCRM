@@ -3,6 +3,16 @@ using Microsoft.AspNetCore.Mvc;
 using AspnetCoreMvcStarter.Models;
 using Microsoft.AspNetCore.Authorization;
 using NAIMS.Models;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using System.Security.Claims;
+
+
 
 namespace AspnetCoreMvcStarter.Controllers;
 
@@ -14,12 +24,7 @@ public class HomeController : Controller
   {
     _context = context;
   }
-  //private readonly ILogger<HomeController> _logger;
 
-  //public HomeController(ILogger<HomeController> logger)
-  //{
-  //  _logger = logger;
-  //}
   [Authorize]
   public IActionResult Index()
   {
@@ -55,9 +60,70 @@ public class HomeController : Controller
     return View();
   }
 
-  public IActionResult SalesDashboard()
+  public async Task<IActionResult> SalesDashboard()
   {
-    return View();
+    var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+    if (string.IsNullOrEmpty(userEmail))
+    {
+      return Unauthorized("User is not authorized.");
+    }
+
+    var employee = await _context.Employees.FirstOrDefaultAsync(e => e.EEmail == userEmail);
+    if (employee == null)
+    {
+      return NotFound("Sales representative not found.");
+    }
+
+    var currentMonth = DateTime.Now.Month;
+    var currentYear = DateTime.Now.Year;
+
+    var ordersThisMonth = await _context.Orders
+        .Include(o => o.ProductsOrders)
+        .ThenInclude(po => po.Product)
+        .Where(o => o.EmployeeId == employee.EmployeeId && o.OrderDate.Year == currentYear && o.OrderDate.Month == currentMonth)
+        .ToListAsync();
+
+    var ordersCount = ordersThisMonth.Count;
+    var predictedCommission = ordersThisMonth
+        .SelectMany(o => o.ProductsOrders)
+        .Sum(po => po.Qty * po.Product.Price * (double)(employee.EComissionPerc / 100m));
+
+    var monthlyTarget = employee.ETarget;
+    var hasReachedTarget = predictedCommission >= monthlyTarget;
+
+    string encouragingMessage = hasReachedTarget
+        ? "Congratulations! You have reached your target!"
+        : "Keep going! You are almost there!";
+
+    // Retrieve past year data
+    var pastYearOrders = await _context.Orders
+        .Where(o => o.EmployeeId == employee.EmployeeId && o.OrderDate > DateOnly.FromDateTime(DateTime.Now.AddYears(-1)))
+        .ToListAsync();
+
+    // Group and calculate monthly overview
+    var pastYearData = pastYearOrders
+        .GroupBy(o => new { o.OrderDate.Year, o.OrderDate.Month })
+        .Select(g => new MonthlyOverview
+        {
+          Month = g.Key.Year + "-" + g.Key.Month,
+          Orders = g.Count(),
+          TotalSales = (decimal)g.Sum(o => o.ProductsOrders.Sum(po => po.Qty * po.Product.Price))
+        })
+        .OrderBy(m => m.Month)
+        .ToList();
+
+    var viewModel = new SalesRepDashboardViewModel
+    {
+      OrdersThisMonth = ordersCount,
+      PredictedCommission = (decimal)predictedCommission,
+      HasReachedTarget = hasReachedTarget,
+      MonthlyTarget = monthlyTarget,
+      SalesRepName = $"{employee.EFirstname} {employee.ELastname}",
+      EncouragingMessage = encouragingMessage,
+      MonthlyOverviews = pastYearData
+    };
+
+    return View(viewModel);
   }
 
   public IActionResult Privacy()

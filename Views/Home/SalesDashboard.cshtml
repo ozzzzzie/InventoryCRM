@@ -1,6 +1,140 @@
+@model NAIMS.Models.SalesRepDashboardViewModel
+
 @{
     ViewData["Title"] = "Sales Dashboard";
 }
 
-<h1>Sales Dashboard</h1>
+<h1 class="text-center">Sales Dashboard</h1>
+<br />
+<div class="row mb-4 d-flex justify-content-center">
+    <div class="col-md-4 d-flex">
+        <div class="card mb-3 w-100" style="background-color: #FFCCCB;">
+            <div class="card-header" style="color: #4d4d4d;">
+                Orders This Month
+            </div>
+            <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                <h5 class="card-title" style="color: #4d4d4d;">Orders This Month</h5>
+                <p class="card-text display-4" style="color: #4d4d4d;">@Model.OrdersThisMonth</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 d-flex">
+        <div class="card mb-3 w-100" style="background-color: #BDE0FE;">
+            <div class="card-header" style="color: #4d4d4d;">
+                Predicted Commission
+            </div>
+            <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                <h5 class="card-title" style="color: #4d4d4d;">Predicted Commission</h5>
+                <p class="card-text display-4" style="color: #4d4d4d;">@Model.PredictedCommission.ToString("0.000 BHD")</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 d-flex">
+        <div class="card mb-3 w-100" style="background-color: #FFFFCC;">
+            <div class="card-header" style="color: #4d4d4d;">
+                Monthly Target
+            </div>
+            <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                <h5 class="card-title" style="color: #4d4d4d;">Monthly Target</h5>
+                <p class="card-text display-4" style="color: #4d4d4d;">@Model.MonthlyTarget.ToString("0.000 BHD")</p>
+                <div class="progress w-100">
+                    <div class="progress-bar" role="progressbar" style="width: @(Model.PredictedCommission / Model.MonthlyTarget * 100)%" aria-valuenow="@(Model.PredictedCommission / Model.MonthlyTarget * 100)" aria-valuemin="0" aria-valuemax="100">@((Model.PredictedCommission / Model.MonthlyTarget * 100).ToString("0.0"))%</div>
+                </div>
+                <p class="card-text mt-2" style="color: #4d4d4d;">@Model.EncouragingMessage</p>
+            </div>
+        </div>
+    </div>
+</div>
 
+<div class="card mb-3">
+    <div class="card-header">
+        Monthly Sales Overview (Past Year)
+    </div>
+    <div class="card-body">
+        <canvas id="monthlySalesChart" style="height: 300px;"></canvas>
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Gradient fill for the line chart
+        var ctx = document.getElementById('monthlySalesChart').getContext('2d');
+        var gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(54, 162, 235, 0.5)');
+        gradient.addColorStop(1, 'rgba(54, 162, 235, 0)');
+
+        var monthlySalesChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.MonthlyOverviews.Select(m => m.Month))),
+                datasets: [{
+                    label: 'Total Sales (BHD)',
+                    data: @Html.Raw(Json.Serialize(Model.MonthlyOverviews.Select(m => m.TotalSales))),
+                    backgroundColor: gradient,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(54, 162, 235, 1)',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+<style>
+    .card-title {
+        font-size: 1.25rem;
+    }
+
+    .card-text.display-4 {
+        font-size: 2.5rem;
+        font-weight: bold;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    .card-header {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #4d4d4d;
+    }
+
+    .progress-bar {
+        background-color: #28a745;
+    }
+</style>
