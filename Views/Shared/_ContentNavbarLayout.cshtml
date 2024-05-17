@@ -75,6 +75,7 @@
     </div>
     <!-- / Layout page -->
   </div>
+    @RenderSection("Scripts", required: false)
 
   <!-- Overlay -->
   @if (@ViewData["isMenu"] != null && Convert.ToBoolean(@ViewData["isMenu"]))

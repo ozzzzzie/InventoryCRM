@@ -12,6 +12,9 @@ namespace NAIMS.Models
     public string SalesRepName { get; set; }
     public string EncouragingMessage { get; set; }
     public List<MonthlyOverview> MonthlyOverviews { get; set; }
+
+    public decimal TotalSalesThisMonth { get; set; }
+
   }
 
   public class MonthlyOverview

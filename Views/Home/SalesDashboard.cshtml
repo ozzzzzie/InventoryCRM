@@ -38,7 +38,7 @@
                 <h5 class="card-title" style="color: #4d4d4d;">Monthly Target</h5>
                 <p class="card-text display-4" style="color: #4d4d4d;">@Model.MonthlyTarget.ToString("0.000 BHD")</p>
                 <div class="progress w-100">
-                    <div class="progress-bar" role="progressbar" style="width: @(Model.PredictedCommission / Model.MonthlyTarget * 100)%" aria-valuenow="@(Model.PredictedCommission / Model.MonthlyTarget * 100)" aria-valuemin="0" aria-valuemax="100">@((Model.PredictedCommission / Model.MonthlyTarget * 100).ToString("0.0"))%</div>
+                    <div class="progress-bar" role="progressbar" style="width: @(Math.Max(0, (Model.TotalSalesThisMonth / Model.MonthlyTarget * 100)))%" aria-valuenow="@(Math.Max(0, (Model.TotalSalesThisMonth / Model.MonthlyTarget * 100)))" aria-valuemin="0" aria-valuemax="100">@Math.Max(0, (Model.TotalSalesThisMonth / Model.MonthlyTarget * 100)).ToString("0.0")%</div>
                 </div>
                 <p class="card-text mt-2" style="color: #4d4d4d;">@Model.EncouragingMessage</p>
             </div>
@@ -48,7 +48,7 @@
 
 <div class="card mb-3">
     <div class="card-header">
-        Monthly Sales Overview (Past Year)
+        Your Monthly Sales Overview (Past Year)
     </div>
     <div class="card-body">
         <canvas id="monthlySalesChart" style="height: 300px;"></canvas>

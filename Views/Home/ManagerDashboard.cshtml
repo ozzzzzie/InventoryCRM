@@ -1,6 +1,260 @@
+@model NAIMS.Models.ManagerDashboardViewModel
+@using Newtonsoft.Json
+
 @{
     ViewData["Title"] = "Manager Dashboard";
+    var pastelColors = new[] { "bg-light-blue", "bg-light-pink", "bg-light-green", "bg-light-yellow" };
+    var totalTiles = 0;
 }
 
-<h1>Manager Dashboard</h1>
+<div class="container">
+    <h1 class="my-4">Manager Dashboard</h1>
 
+    <div class="row">
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 @pastelColors[totalTiles++ % pastelColors.Length]">
+                <div class="card-body">
+                    <h5 class="card-title">Total Orders This Month</h5>
+                    <p class="card-text">@Model.TotalOrdersThisMonth</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 @pastelColors[totalTiles++ % pastelColors.Length]">
+                <div class="card-body">
+                    <h5 class="card-title">Total Sales This Month</h5>
+                    <p class="card-text">@Model.TotalSalesThisMonth.ToString("0.000") BHD</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 @pastelColors[totalTiles++ % pastelColors.Length]">
+                <div class="card-body">
+                    <h5 class="card-title">Tax Collected This Year</h5>
+                    <p class="card-text">@Model.TaxCollectedThisYear.ToString("0.000") BHD</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">Sales Forecast</div>
+                <div class="card-body">
+                    <div id="sales-forecast-chart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">Product Sales Trends</div>
+                <div class="card-body">
+                    <select id="product-selector" class="form-control mb-3">
+                        @foreach (var product in Model.ProductSalesTrends)
+                        {
+                            <option value="@product.ProductName">@product.ProductName</option>
+                        }
+                    </select>
+                    <div id="product-sales-trend-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">Employee Target Statuses</div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Sales</th>
+                                <th>Target</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var employee in Model.EmployeeTargetStatuses)
+                            {
+                                <tr>
+                                    <td>@employee.EmployeeName</td>
+                                    <td>@employee.Sales.ToString("0.000") BHD</td>
+                                    <td>@employee.Target.ToString("0.000") BHD</td>
+                                    <td>
+                                        @if (employee.HasReachedTarget)
+                                        {
+                                            <span class="badge bg-success">Reached</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Not Reached</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">Out of Stock Items</div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Brand</th>
+                                <th>Size</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OutOfStockItems)
+                            {
+                                <tr>
+                                    <td>@item.Pname</td>
+                                    <td>
+
+                                        @if (item.BrandId == 1)
+                                        {
+                                            <text>milk_shake</text>
+                                        }
+                                        else if (item.BrandId == 2)
+                                        {
+                                            <text>depot</text>
+                                        }
+                                        else if (item.BrandId == 3)
+                                        {
+                                            <text>simply zen</text>
+                                        }
+                                        else
+                                        {
+                                            @item.Brand?.Bname
+                                        }
+
+                                    </td>
+                                    <td>@item.Size</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        // Sales Forecast Chart
+        var salesForecastOptions = {
+            chart: {
+                type: 'area',
+                height: 350,
+                toolbar: { show: false }
+            },
+            dataLabels: { enabled: false },
+            stroke: { curve: 'smooth' },
+            series: [{
+                name: 'Predicted Sales',
+                data: @Html.Raw(JsonConvert.SerializeObject(Model.SalesForecast.Select(f => f.PredictedSales).ToList()))
+                    }],
+            xaxis: {
+                categories: @Html.Raw(JsonConvert.SerializeObject(Model.SalesForecast.Select(f => f.Month).ToList()))
+                    },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.7,
+                    opacityTo: 0.9,
+                    stops: [0, 90, 100]
+                }
+            },
+            tooltip: { y: { formatter: val => val + " BHD" } }
+        };
+        var salesForecastChart = new ApexCharts(document.querySelector("#sales-forecast-chart"), salesForecastOptions);
+        salesForecastChart.render();
+
+        // Product Sales Trend Chart
+        var productSalesTrendChart;
+
+        function renderProductSalesTrendChart(productName) {
+            var productTrendData = @Html.Raw(JsonConvert.SerializeObject(Model.ProductSalesTrends));
+            var selectedProduct = productTrendData.find(product => product.ProductName === productName);
+
+            var options = {
+                chart: {
+                    type: 'line',
+                    height: 350,
+                    toolbar: { show: false }
+                },
+                dataLabels: { enabled: false },
+                stroke: { curve: 'smooth' },
+                series: [{
+                    name: 'Total Sales',
+                    data: selectedProduct.MonthlySales.map(s => s.TotalSales)
+                }],
+                xaxis: {
+                    categories: selectedProduct.MonthlySales.map(s => s.Month)
+                },
+                tooltip: { y: { formatter: val => val + " BHD" } }
+            };
+
+            if (productSalesTrendChart) {
+                productSalesTrendChart.updateOptions(options);
+            } else {
+                productSalesTrendChart = new ApexCharts(document.querySelector("#product-sales-trend-chart"), options);
+                productSalesTrendChart.render();
+            }
+        }
+
+        document.getElementById('product-selector').addEventListener('change', function () {
+            renderProductSalesTrendChart(this.value);
+        });
+
+        // Initial render for the first product
+        renderProductSalesTrendChart(document.getElementById('product-selector').value);
+    </script>
+}
+
+<style>
+    .bg-light-blue {
+        background-color: #cce5ff;
+        color: #004085;
+    }
+
+    .bg-light-pink {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .bg-light-green {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .bg-light-yellow {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
+
+    .card-text {
+        font-size: 1.5rem;
+    }
+
+    .badge {
+        font-size: 1rem;
+        padding: 0.5em 1em;
+    }
+</style>
