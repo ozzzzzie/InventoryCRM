@@ -40,7 +40,7 @@ public class HomeController : Controller
       return View();
     }
   }
-  [Authorize]
+
   public async Task<IActionResult> SuperAdminDashboard()
   {
     var currentMonth = DateTime.Now.Month;
@@ -153,7 +153,7 @@ public class HomeController : Controller
           .ToListAsync();
 
       var totalSales = orders.Sum(o => o.ProductsOrders.Sum(po => po.Qty * po.Product.Price));
-      var hasReachedTarget = totalSales >= employee.ETarget;
+      var hasReachedTarget = (totalSales >= employee.ETarget*12);
 
       employeePerformances.Add(new AEmployeePerformance
       {
@@ -166,7 +166,7 @@ public class HomeController : Controller
 
     return employeePerformances;
   }
-  [Authorize]
+
   public async Task<IActionResult> ManagerDashboard()
   {
     var currentMonth = DateTime.Now.Month;
@@ -301,7 +301,7 @@ public class HomeController : Controller
   }
 
 
-  [Authorize]
+
   public async Task<IActionResult> SalesDashboard()
   {
     var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
@@ -326,11 +326,13 @@ public class HomeController : Controller
         .ToListAsync();
 
     var ordersCount = ordersThisMonth.Count;
+    var predictedCommission = ordersThisMonth
+        .SelectMany(o => o.ProductsOrders)
+        .Sum(po => po.Qty * po.Product.Price * (double)(employee.EComissionPerc / 100m));
+
     var totalSalesThisMonth = ordersThisMonth
         .SelectMany(o => o.ProductsOrders)
         .Sum(po => po.Qty * po.Product.Price);
-
-    var predictedCommission = totalSalesThisMonth * (double)(employee.EComissionPerc / 100m);
 
     var monthlyTarget = employee.ETarget;
     var hasReachedTarget = totalSalesThisMonth >= monthlyTarget;
@@ -339,10 +341,14 @@ public class HomeController : Controller
         ? "Congratulations! You have reached your target!"
         : "Keep going! You are almost there!";
 
+    // Retrieve past year data
     var pastYearOrders = await _context.Orders
-        .Where(o => o.EmployeeId == employee.EmployeeId && o.OrderDate > DateOnly.FromDateTime(DateTime.Now.AddYears(-1)))
+        .Include(o => o.ProductsOrders)
+        .ThenInclude(po => po.Product)
+        .Where(o => o.EmployeeId == employee.EmployeeId && o.OrderDate >= DateOnly.FromDateTime(DateTime.Now.AddYears(-1)))
         .ToListAsync();
 
+    // Group and calculate monthly overview
     var pastYearData = pastYearOrders
         .GroupBy(o => new { o.OrderDate.Year, o.OrderDate.Month })
         .Select(g => new MonthlyOverview
@@ -368,6 +374,33 @@ public class HomeController : Controller
 
     return View(viewModel);
   }
+
+
+  private async Task<List<MonthlyOverview>> GetMonthlyOverviewForPastYear(int employeeId)
+  {
+    var oneYearAgo = DateOnly.FromDateTime(DateTime.Now.AddYears(-1));
+    var pastYearOrders = await _context.Orders
+        .Include(o => o.ProductsOrders)
+        .ThenInclude(po => po.Product)
+        .Where(o => o.OrderDate >= oneYearAgo && o.EmployeeId == employeeId)
+        .ToListAsync();
+
+    var pastYearData = pastYearOrders
+        .GroupBy(o => new { o.OrderDate.Year, o.OrderDate.Month })
+        .Select(g => new MonthlyOverview
+        {
+          Month = g.Key.Year + "-" + g.Key.Month,
+          Orders = g.Count(),
+          TotalSales = g.Sum(o => o.ProductsOrders.Sum(po => po.Qty * (decimal)po.Product.Price))
+        })
+        .OrderBy(m => m.Month)
+        .ToList();
+
+    return pastYearData;
+  }
+
+
+
 
   public IActionResult Privacy()
   {

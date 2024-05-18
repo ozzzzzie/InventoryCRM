@@ -159,7 +159,7 @@
             dataLabels: { enabled: false },
             stroke: { curve: 'smooth' },
             series: [{
-                name: 'Predicted Sales',
+                name: 'Sales Revenue',
                 data: @Html.Raw(JsonConvert.SerializeObject(Model.SalesForecast.Select(f => f.PredictedSales).ToList()))
                     }],
             xaxis: {

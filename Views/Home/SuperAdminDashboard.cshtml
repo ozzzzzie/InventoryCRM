@@ -66,7 +66,7 @@
                             <tr>
                                 <th>Employee Name</th>
                                 <th>Sales</th>
-                                <th>Target</th>
+                                <th>Yearly Target</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -76,7 +76,8 @@
                                 <tr>
                                     <td>@performance.EmployeeName</td>
                                     <td>@performance.Sales.ToString("0.000") BHD</td>
-                                    <td>@performance.Target.ToString("0.000") BHD</td>
+                                    <td>@(performance.Target * 12) BHD</td>
+
                                     <td>
                                         @if (performance.HasReachedTarget)
                                         {

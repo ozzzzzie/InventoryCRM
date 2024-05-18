@@ -12,9 +12,20 @@
 
 <h1>All Inventory</h1>
 
-<p align=right>
-    <a asp-action="Create" class="btn btn-dark">add new product</a>
-</p>
+
+
+<div class="d-flex justify-content-end">
+    <div class="mr-2">
+        <a asp-controller="Products" asp-action="MovingItems" class="btn btn-dark">Move Products</a>
+    </div>
+    <div style="padding-left: 10px;">
+        <p align=right>
+            <a asp-action="Create" class="btn btn-dark">add new product</a>
+        </p>
+    </div>
+</div>
+<br />
+
 
 <div class="card">
     <div class="table-responsive text-nowrap">

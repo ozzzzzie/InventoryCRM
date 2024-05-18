@@ -11,6 +11,10 @@ namespace NAIMS.Models
     public List<ProductSalesTrend> ProductSalesTrends { get; set; }
     public List<EmployeeTargetStatus> EmployeeTargetStatuses { get; set; }
     public List<Product> OutOfStockItems { get; set; }
+
+    public decimal TotalSalesThisYear { get; set; }
+    public decimal Target { get; set; }
+    public bool HasReachedTarget { get; set; }
   }
 
   public class SalesForecast
