@@ -31,21 +31,34 @@
             </a>
         </li>
         </li>
-@*         <li class='menu-item@(currentPage == "/TEST" ? " active" : "")'>
-            <a asp-controller="Products" asp-action="Testing" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-band-aid"></i>
-                <div>TESTING</div>
-            </a>
-        </li> *@
-        <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">Management</span>
-        </li>
-        <li class='menu-item@(currentPage == "/Employees" ? " active" : "")'>
-            <a asp-controller="Employees" asp-action="Index" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-face"></i>
-                <div>Employees</div>
-            </a>
-        </li>
+
+        @if (User.IsInRole("SuperAdmin"))
+        {
+            <li class="menu-header small text-uppercase">
+                <span class="menu-header-text">Management</span>
+            </li>
+            <li class='menu-item@(currentPage == "/Employees" ? " active" : "")'>
+                <a asp-controller="Employees" asp-action="Index" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-face"></i>
+                    <div>Employees</div>
+                </a>
+            </li>
+        }
+
+        @if (User.IsInRole("Manager"))
+        {
+            <li class="menu-header small text-uppercase">
+                <span class="menu-header-text">Management</span>
+            </li>
+            <li class='menu-item@(currentPage == "/Employees" ? " active" : "")'>
+                <a asp-controller="Employees" asp-action="Index" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-face"></i>
+                    <div>Employees</div>
+                </a>
+            </li>
+        }
+
+
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Order Information</span>
         </li>
@@ -102,15 +115,10 @@
                 <div>Local Inventory</div>
             </a>
         </li>
-@*         <li class='menu-item@(currentPage == "/Products/StockReport" ? " active" : "")'>
-            <a asp-controller="Products" asp-action="StockReport" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-store"></i>
-                <div>Stock</div>
-            </a>
-        </li> *@
+
         <!-- Apps & Pages -->
         <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">External Pages</span>
+            <span class="menu-header-text">External Pages <br />(login required)</span>
         </li>
         <!-- Apps -->
         <li class='menu-item@(currentPage == "/Apps/Gmail" ? " active" : "")'>
@@ -141,7 +149,7 @@
             <a href="https://sheets.google.com/" target="_blank" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-spreadsheet"></i>
                 <div>Sheets</div>
-                </a>
+            </a>
         </li>
         <!-- Legal -->
         <li class="menu-header small text-uppercase">

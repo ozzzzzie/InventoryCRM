@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,11 +21,7 @@ namespace NAIMS.Controllers
     }
 
     // GET: Products
-    //public async Task<IActionResult> Index()
-    //{
-    //    var naimsdbContext = _context.Products.Include(p => p.Brand);
-    //    return View(await naimsdbContext.ToListAsync());
-    //}
+    [Authorize]
     public async Task<IActionResult> Index(string sortOrder)
     {
       //bug
@@ -109,7 +106,7 @@ namespace NAIMS.Controllers
 
       return View(await products.AsNoTracking().ToListAsync());
     }
-
+    [Authorize]
     public async Task<IActionResult> LocalInventory(string sortOrder)
     {
 
@@ -177,7 +174,7 @@ namespace NAIMS.Controllers
 
       return View(await products.AsNoTracking().ToListAsync());
     }
-
+    [Authorize]
     public async Task<IActionResult> WarehouseInventory(string sortOrder)
     {
 
@@ -243,6 +240,8 @@ namespace NAIMS.Controllers
 
       return View(await products.AsNoTracking().ToListAsync());
     }
+
+    [Authorize]
     public async Task<IActionResult> Details(int? id)
     {
       if (id == null)
@@ -261,6 +260,7 @@ namespace NAIMS.Controllers
       return View(product);
     }
 
+    [Authorize]
     public IActionResult MovingItems()
     {
       var products = _context.Products.ToList();
@@ -288,9 +288,6 @@ namespace NAIMS.Controllers
 
         var qty = moveQuantities[id];
         var product = await _context.Products.FindAsync(id);
-
-
-        //var qty = moveQuantities[id];
 
         int warehouseQty = product.WarehouseQty;
         int localQty = product.LocalQty;
@@ -344,6 +341,7 @@ namespace NAIMS.Controllers
 
     }
 
+    [Authorize(Roles = "SuperAdmin,Manager")]
     // GET: Products1/Create
     public IActionResult Create()
     {
@@ -368,6 +366,7 @@ namespace NAIMS.Controllers
       return View(product);
     }
 
+    [Authorize(Roles = "SuperAdmin,Manager")]
     // GET: Products1/Edit/5
     public async Task<IActionResult> Edit(int? id)
     {
@@ -420,7 +419,7 @@ namespace NAIMS.Controllers
       ViewData["BrandId"] = new SelectList(_context.Brands, "BrandId", "Bname", product.BrandId);
       return View(product);
     }
-
+    [Authorize(Roles = "SuperAdmin,Manager")]
     // GET: Products1/Delete/5
     public async Task<IActionResult> Delete(int? id)
     {

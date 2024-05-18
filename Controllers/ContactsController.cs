@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -17,28 +18,28 @@ namespace NAIMS.Controllers
     {
       _context = context;
     }
-
+    [Authorize]
     // GET: Contacts
     public async Task<IActionResult> Index()
     {
       return View(await _context.Contacts.ToListAsync());
     }
 
-
+    [Authorize]
     public async Task<IActionResult> Salons()
     {
       var salons = await _context.Contacts.Where(c => c.Ctype == "Salon").ToListAsync();
       return View(salons);
     }
 
-
+    [Authorize]
     public async Task<IActionResult> Influencers()
     {
       var influencers = await _context.Contacts.Where(c => c.Ctype == "Influencer").ToListAsync();
       return View(influencers);
     }
 
-
+    [Authorize]
     // GET: Contacts/Details/5
     public async Task<IActionResult> Details(int? id)
     {
@@ -56,7 +57,7 @@ namespace NAIMS.Controllers
 
       return View(contact);
     }
-
+    [Authorize(Roles = "SuperAdmin,Manager")]
     // GET: Contacts/Create
     public IActionResult Create()
     {
@@ -78,7 +79,7 @@ namespace NAIMS.Controllers
       }
       return View(contact);
     }
-
+    [Authorize(Roles = "SuperAdmin,Manager")]
     // GET: Contacts/Edit/5
     public async Task<IActionResult> Edit(int? id)
     {
@@ -129,7 +130,7 @@ namespace NAIMS.Controllers
       }
       return View(contact);
     }
-
+     [Authorize(Roles = "SuperAdmin,Manager")]
     // GET: Contacts/Delete/5
     public async Task<IActionResult> Delete(int? id)
     {

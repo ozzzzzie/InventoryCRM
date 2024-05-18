@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -17,34 +18,34 @@ namespace NAIMS.Controllers
     {
       _context = context;
     }
-
+    [Authorize]
     // GET: Orders/AddProducts
-public IActionResult AddProducts()
-        {
-            PopulateViewBags();
+    public IActionResult AddProducts()
+    {
+      PopulateViewBags();
 
-            var products = _context.Products
-                .Include(p => p.Brand)
-                .ToList();
+      var products = _context.Products
+          .Include(p => p.Brand)
+          .ToList();
 
-            var productSelectList = products.Select(p => new SelectListItem
-            {
-                Value = p.ProductId.ToString(),
-                Text = (p.Brand != null ? p.Brand.Bname + " - " : "") + p.Pname + (p.Size != null ? " (" + p.Size + ")" : "")
-            }).ToList();
+      var productSelectList = products.Select(p => new SelectListItem
+      {
+        Value = p.ProductId.ToString(),
+        Text = (p.Brand != null ? p.Brand.Bname + " - " : "") + p.Pname + (p.Size != null ? " (" + p.Size + ")" : "")
+      }).ToList();
 
-            var productPrices = products.ToDictionary(p => p.ProductId, p => p.Price);
+      var productPrices = products.ToDictionary(p => p.ProductId, p => p.Price);
 
-            var viewModel = new AddProductsViewModel
-            {
-                Products = productSelectList,
-                ProductPrices = productPrices,
-                Order = new Order(),
-                ProductsOrders = new List<ProductsOrder> { new ProductsOrder() }
-            };
+      var viewModel = new AddProductsViewModel
+      {
+        Products = productSelectList,
+        ProductPrices = productPrices,
+        Order = new Order(),
+        ProductsOrders = new List<ProductsOrder> { new ProductsOrder() }
+      };
 
-            return View(viewModel);
-        }
+      return View(viewModel);
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -101,17 +102,19 @@ public IActionResult AddProducts()
     }
 
     private void PopulateViewBags()
-        {
-            var emp = _context.Employees.Select(e => new
-            {
-                e.EmployeeId,
-                FullName = $"{e.EFirstname} {e.ELastname}"
-            });
+    {
+      var emp = _context.Employees.Select(e => new
+      {
+        e.EmployeeId,
+        FullName = $"{e.EFirstname} {e.ELastname}"
+      });
 
-            ViewData["EmployeeId"] = new SelectList(emp, "EmployeeId", "FullName");
-            ViewData["ContactId"] = new SelectList(_context.Contacts, "ContactId", "Cname");
-        }
+      ViewData["EmployeeId"] = new SelectList(emp, "EmployeeId", "FullName");
+      ViewData["ContactId"] = new SelectList(_context.Contacts, "ContactId", "Cname");
+    }
 
+
+    [Authorize]
     // GET: Orders
     public async Task<IActionResult> Index()
     {
@@ -122,6 +125,8 @@ public IActionResult AddProducts()
       return View(orders);
     }
 
+
+    [Authorize]
     // GET: Orders/Details/5
     public async Task<IActionResult> Details(int id)
     {
@@ -141,6 +146,8 @@ public IActionResult AddProducts()
       return View(order);
     }
 
+
+    [Authorize]
     public IActionResult SalesInvoicePrint(int id)
     {
       var order = _context.Orders
@@ -161,39 +168,7 @@ public IActionResult AddProducts()
 
 
     // GET: Orders/Create
-    public IActionResult Create()
-    {
-
-      var emp = _context.Employees.Select(e => new
-      {
-        e.EmployeeId,
-        FullName = $"{e.EFirstname} {e.ELastname}"
-      });
-
-      ViewData["EmployeeId"] = new SelectList(emp, "EmployeeId", "FullName");
-      ViewData["ContactId"] = new SelectList(_context.Contacts, "ContactId", "Cname");
-
-      return View();
-
-    }
-
-    // POST: Orders/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("OrderId,ContactId,OrderDate,EmployeeId")] Order order)
-    {
-      if (ModelState.IsValid)
-      {
-        _context.Add(order);
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-      }
-      ViewData["ContactId"] = new SelectList(_context.Contacts, "ContactId", "ContactId", order.ContactId);
-      ViewData["EmployeeId"] = new SelectList(_context.Employees, "EmployeeId", "EmployeeId", order.EmployeeId);
-      return View(order);
-    }
+    [Authorize]
     public async Task<IActionResult> Edit(int? id)
     {
       if (id == null)
@@ -341,6 +316,7 @@ public IActionResult AddProducts()
       return _context.Orders.Any(e => e.OrderId == id);
     }
 
+    [Authorize]
 
     // GET: Orders/Delete/5
     // GET: Orders/Delete/5

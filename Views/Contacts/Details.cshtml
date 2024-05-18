@@ -47,11 +47,23 @@
                     </div>
                 </div>
                 <div class="row justify-content-end">
-                    <div class="col-sm-10">
-                        <a asp-action="Edit" asp-route-id="@Model?.ContactId" class="btn btn-primary">
-                            <i class="bx bx-edit-alt me-1"></i>Edit
-                        </a>
-                    </div>
+                    @if (User.IsInRole("SuperAdmin"))
+                    {
+                        <div class="col-sm-10">
+                            <a asp-action="Edit" asp-route-id="@Model?.ContactId" class="btn btn-primary">
+                                <i class="bx bx-edit-alt me-1"></i>Edit
+                            </a>
+                        </div>
+                    }
+
+                    @if (User.IsInRole("Manager"))
+                    {
+                        <div class="col-sm-10">
+                            <a asp-action="Edit" asp-route-id="@Model?.ContactId" class="btn btn-primary">
+                                <i class="bx bx-edit-alt me-1"></i>Edit
+                            </a>
+                        </div>
+                    }
                 </div>
             </form>
         </div>

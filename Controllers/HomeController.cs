@@ -40,7 +40,7 @@ public class HomeController : Controller
       return View();
     }
   }
-
+  [Authorize]
   public async Task<IActionResult> SuperAdminDashboard()
   {
     var currentMonth = DateTime.Now.Month;
@@ -166,7 +166,7 @@ public class HomeController : Controller
 
     return employeePerformances;
   }
-
+  [Authorize]
   public async Task<IActionResult> ManagerDashboard()
   {
     var currentMonth = DateTime.Now.Month;
@@ -301,7 +301,7 @@ public class HomeController : Controller
   }
 
 
-
+  [Authorize]
   public async Task<IActionResult> SalesDashboard()
   {
     var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
@@ -368,9 +368,6 @@ public class HomeController : Controller
 
     return View(viewModel);
   }
-
-
-
 
   public IActionResult Privacy()
   {

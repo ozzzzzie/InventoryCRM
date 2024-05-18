@@ -13,9 +13,19 @@
 
 <h1>All Contacts</h1>
 
-<p align="right">
-    <a asp-action="Create" class="btn btn-dark">add new contact</a>
-</p>
+@if (User.IsInRole("SuperAdmin"))
+{
+    <p align="right">
+        <a asp-action="Create" class="btn btn-dark">add new contact</a>
+    </p>
+}
+
+@if (User.IsInRole("Manager"))
+{
+    <p align="right">
+        <a asp-action="Create" class="btn btn-dark">add new contact</a>
+    </p>
+}
 
 <div class="card">
     <div class="table-responsive text-nowrap">
@@ -65,15 +75,37 @@
                                     <i class="bx bx-dots-vertical-rounded"></i>
                                 </button>
                                 <div class="dropdown-menu">
-                                    <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.ContactId">
-                                        <i class="bx bx-edit-alt me-1"></i> Edit
-                                    </a>
-                                    <a class="dropdown-item" asp-action="Details" asp-route-id="@item.ContactId">
-                                        <i class="bx bx-info-circle"></i> Details
-                                    </a>
-                                    <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.ContactId">
-                                        <i class="bx bx-trash me-1"></i> Delete
-                                    </a>
+
+                                    @if (User.IsInRole("SuperAdmin"))
+                                    {
+                                        <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.ContactId">
+                                            <i class="bx bx-edit-alt me-1"></i> Edit
+                                        </a>
+                                        <a class="dropdown-item" asp-action="Details" asp-route-id="@item.ContactId">
+                                            <i class="bx bx-info-circle"></i> Details
+                                        </a>
+                                        <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.ContactId">
+                                            <i class="bx bx-trash me-1"></i> Delete
+                                        </a>
+                                    }
+                                    else if (User.IsInRole("Manager"))
+                                    {
+                                        <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.ContactId">
+                                            <i class="bx bx-edit-alt me-1"></i> Edit
+                                        </a>
+                                        <a class="dropdown-item" asp-action="Details" asp-route-id="@item.ContactId">
+                                            <i class="bx bx-info-circle"></i> Details
+                                        </a>
+                                        <a class="dropdown-item" asp-action="Delete" asp-route-id="@item.ContactId">
+                                            <i class="bx bx-trash me-1"></i> Delete
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a class="dropdown-item" asp-action="Details" asp-route-id="@item.ContactId">
+                                            <i class="bx bx-info-circle"></i> Details
+                                        </a>
+                                    }
                                 </div>
                             </div>
                         </td>
