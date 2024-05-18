@@ -4,45 +4,64 @@
     ViewData["Title"] = "Sales Invoices";
 }
 
-
 <style>
     .table-responsive.text-nowrap table {
         font-size: 14px;
     }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+    }
+
+    .page-item {
+        margin: 0 5px;
+    }
+
+    .sortable {
+        cursor: pointer;
+    }
+
+        .sortable i {
+            margin-left: 5px;
+        }
 </style>
 
 <h1>Sales Invoices</h1>
 
 <p align="right">
-    <a asp-action="AddProducts" class="btn btn-dark">new sales invoice</a>
+    <a asp-action="AddProducts" class="btn btn-dark">New Sales Invoice</a>
 </p>
 
 <div class="card">
     <div class="table-responsive text-nowrap">
-        <table class="table table-hover">
+        <table class="table table-hover" id="salesTable">
             <thead>
                 <tr>
-                    <th>Order ID</th>
-                    <th>Order Date</th>
-                    <th>Contact</th>
-                    <th>Employee</th>
+                    <!-- Sortable headers with icons for sorting indication -->
+                    <th class="sortable" onclick="sortTable(0)">Order ID <i class="bx bx-sort"></i></th>
+                    <th class="sortable" onclick="sortTable(1)">Order Date <i class="bx bx-sort"></i></th>
+                    <th class="sortable" onclick="sortTable(2)">Contact <i class="bx bx-sort"></i></th>
+                    <th class="sortable" onclick="sortTable(3)">Employee <i class="bx bx-sort"></i></th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
+                <!-- Display each order -->
                 @foreach (var order in Model)
                 {
                     <tr>
                         <td>@order.OrderId</td>
                         <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
                         <td>@order.Contact?.Cname</td>
-                        <td>@order.Employee?.EFirstname @order.Employee.ELastname</td>
+                        <td>@order.Employee?.EFirstname @order.Employee?.ELastname</td>
                         <td>
                             <div class="dropdown">
                                 <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
                                     <i class="bx bx-dots-vertical-rounded"></i>
                                 </button>
                                 <div class="dropdown-menu">
+                                    <!-- Dropdown menu for Edit, Details, Delete -->
                                     <a class="dropdown-item" asp-action="Edit" asp-route-id="@order.OrderId">
                                         <i class="bx bx-edit-alt me-1"></i> Edit
                                     </a>
@@ -61,3 +80,92 @@
         </table>
     </div>
 </div>
+<br />
+<div class="pagination">
+    <ul id="pagination" class="pagination"></ul>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var table = '#salesTable';
+            var rowsPerPage = 10;  // Number of rows to display per page
+            var rows = $(table + ' tbody tr');
+            var rowsCount = rows.length;
+            var pageCount = Math.ceil(rowsCount / rowsPerPage);
+            var numbers = $('#pagination');
+
+            function updateTable(start, end) {
+                $(table + ' tbody tr').hide().slice(start, end).show();
+            }
+
+            // Generate pagination buttons
+            for (var i = 0; i < pageCount; i++) {
+                numbers.append('<li class="page-item"><a class="page-link" href="#">' + (i + 1) + '</a></li>');
+            }
+
+            // Show first page initially
+            $(table + ' tbody tr').hide();
+            $(table + ' tbody tr').slice(0, rowsPerPage).show();
+            $('#pagination li:first-child a').addClass('active');
+
+            // Handle pagination click
+            $('#pagination a').click(function (e) {
+                e.preventDefault();
+                $('#pagination a').removeClass('active');
+                $(this).addClass('active');
+                var page = $(this).text() - 1;
+                var start = page * rowsPerPage;
+                var end = start + rowsPerPage;
+                updateTable(start, end);
+            });
+        });
+
+        function sortTable(n) {
+            var table = document.getElementById("salesTable");
+            var rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            switching = true;
+            dir = "asc";  // Initial sort direction
+            var th = table.rows[0].getElementsByTagName("TH")[n];
+            resetSortIcons();
+            th.getElementsByTagName("i")[0].className = "bx bx-sort-up";  // Set initial sort icon
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    if (dir == "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount++;
+                } else {
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";  // Switch direction
+                        th.getElementsByTagName("i")[0].className = "bx bx-sort-down";  // Update icon
+                        switching = true;
+                    }
+                }
+            }
+        }
+
+        function resetSortIcons() {
+            var icons = document.querySelectorAll('.sortable i');
+            icons.forEach(icon => icon.className = "bx bx-sort");  // Reset all icons to default
+        }
+    </script>
+}

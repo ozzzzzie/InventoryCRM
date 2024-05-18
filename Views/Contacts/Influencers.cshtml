@@ -29,23 +29,28 @@
 
 <div class="card">
     <div class="table-responsive text-nowrap">
-        <table class="table table-hover">
+        <table class="table table-hover" id="infTable">
             <thead>
                 <tr>
-                    <th>
+                    <th class="sortable" onclick="sortTable(0)">
                         Name
+                        <i class="bx bx-sort"></i>
                     </th>
-                    <th>
+                    <th class="sortable" onclick="sortTable(1)">
                         Type
+                        <i class="bx bx-sort"></i>
                     </th>
-                    <th>
+                    <th class="sortable" onclick="sortTable(2)">
                         Address
+                        <i class="bx bx-sort"></i>
                     </th>
-                    <th>
+                    <th class="sortable" onclick="sortTable(3)">
                         Email
+                        <i class="bx bx-sort"></i>
                     </th>
-                    <th>
+                    <th class="sortable" onclick="sortTable(4)">
                         Phone Number
+                        <i class="bx bx-sort"></i>
                     </th>
                     <th></th>
                 </tr>
@@ -115,5 +120,94 @@
         </table>
     </div>
 </div>
+<br />
+<div class="pagination">
+    <ul id="pagination" class="pagination"></ul>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var table = '#infTable';
+            var rowsPerPage = 10;  // Number of rows to display per page
+            var rows = $(table + ' tbody tr');
+            var rowsCount = rows.length;
+            var pageCount = Math.ceil(rowsCount / rowsPerPage);
+            var numbers = $('#pagination');
+
+            function updateTable(start, end) {
+                $(table + ' tbody tr').hide().slice(start, end).show();
+            }
+
+            // Generate pagination buttons
+            for (var i = 0; i < pageCount; i++) {
+                numbers.append('<li class="page-item"><a class="page-link" href="#">' + (i + 1) + '</a></li>');
+            }
+
+            // Show first page initially
+            $(table + ' tbody tr').hide();
+            $(table + ' tbody tr').slice(0, rowsPerPage).show();
+            $('#pagination li:first-child a').addClass('active');
+
+            // Handle pagination click
+            $('#pagination a').click(function (e) {
+                e.preventDefault();
+                $('#pagination a').removeClass('active');
+                $(this).addClass('active');
+                var page = $(this).text() - 1;
+                var start = page * rowsPerPage;
+                var end = start + rowsPerPage;
+                updateTable(start, end);
+            });
+        });
+
+        function sortTable(n) {
+            var table = document.getElementById("infTable");
+            var rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            switching = true;
+            dir = "asc";  // Initial sort direction
+            var th = table.rows[0].getElementsByTagName("TH")[n];
+            resetSortIcons();
+            th.getElementsByTagName("i")[0].className = "bx bx-sort-up";  // Set initial sort icon
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    if (dir == "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount++;
+                } else {
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";  // Switch direction
+                        th.getElementsByTagName("i")[0].className = "bx bx-sort-down";  // Update icon
+                        switching = true;
+                    }
+                }
+            }
+        }
+
+        function resetSortIcons() {
+            var icons = document.querySelectorAll('.sortable i');
+            icons.forEach(icon => icon.className = "bx bx-sort");  // Reset all icons to default
+        }
+    </script>
+}
 
 

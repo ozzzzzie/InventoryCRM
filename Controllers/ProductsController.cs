@@ -24,221 +24,26 @@ namespace NAIMS.Controllers
     [Authorize]
     public async Task<IActionResult> Index(string sortOrder)
     {
-      //bug
-      //var brands = _context.Brands.ToList();
-      //ViewBag.Brands = new SelectList(brands, "BrandId", "Bname");
-
-      // sorting data
-      ViewData["BarcodeSortParm"] = sortOrder == "Barcode" ? "Barcode_desc" : "Barcode";
-      ViewData["SKUSortParm"] = sortOrder == "SKU" ? "SKU_desc" : "SKU";
-      ViewData["BrandSortParm"] = String.IsNullOrEmpty(sortOrder) ? "brand_desc" : "Brand";
-      ViewData["ProdSortParm"] = String.IsNullOrEmpty(sortOrder) ? "prod_desc" : "Prods";
-      ViewData["SizeSortParm"] = sortOrder == "Size" ? "Size_desc" : "Size";
-      ViewData["WQSortParm"] = sortOrder == "Warehouse Quantity" ? "WQTY_desc" : "Warehouse Quantity";
-      ViewData["WQStatSortParm"] = sortOrder == "Warehouse Status" ? "WSTS_desc" : "Warehouse Status";
-      ViewData["LclSortParm"] = sortOrder == "Local Quantity" ? "LCLQTY_desc" : "Local Quantity";
-      ViewData["LclStatSortParm"] = sortOrder == "Local Status" ? "LCLSTS_desc" : "Local Status";
-
       var products = from p in _context.Products
                      select p;
 
-      switch (sortOrder)
-      {
-        case "Barcode":
-          products = products.OrderByDescending(p => p.Barcode).Reverse();
-          break;
-        case "Barcode_desc":
-          products = products.OrderByDescending(p => p.Barcode);
-          break;
-        case "SKU":
-          products = products.OrderByDescending(p => p.Sku).Reverse();
-          break;
-        case "SKU_desc":
-          products = products.OrderByDescending(p => p.Sku);
-          break;
-        //check on this again - bug with desc for brand and names
-        case "brand_desc":
-          products = products.OrderByDescending(p => p.BrandId);
-          break;
-        case "Brand":
-          products = products.OrderByDescending(p => p.BrandId).Reverse();
-          break;
-        case "prod_desc":
-          products = products.OrderByDescending(p => p.Pname);
-          break;
-        case "Prods":
-          products = products.OrderByDescending(p => p.Pname).Reverse();
-          break;
-        case "Size":
-          products = products.OrderByDescending(p => p.Size).Reverse();
-          break;
-        case "Size_desc":
-          products = products.OrderByDescending(p => p.Size);
-          break;
-        case "Warehouse Quantity":
-          products = products.OrderByDescending(p => p.WarehouseQty).Reverse();
-          break;
-        case "WQTY_desc":
-          products = products.OrderByDescending(p => p.WarehouseQty);
-          break;
-        case "WSTS_desc":
-          products = products.OrderByDescending(p => p.WarehouseStatus);
-          break;
-        case "Warehouse Status":
-          products = products.OrderByDescending(p => p.WarehouseStatus).Reverse();
-          break;
-        case "Local Quantity":
-          products = products.OrderByDescending(p => p.LocalQty).Reverse();
-          break;
-        case "LCLQTY_desc":
-          products = products.OrderByDescending(p => p.LocalQty);
-          break;
-        case "LCLSTS_desc":
-          products = products.OrderByDescending(p => p.LocalStatus);
-          break;
-        case "Local Status":
-          products = products.OrderByDescending(p => p.LocalStatus).Reverse();
-          break;
-        default:
-          products = products.OrderBy(p => p.Barcode);
-          break;
-      }
-
-      return View(await products.AsNoTracking().ToListAsync());
+      return View(products);
     }
     [Authorize]
     public async Task<IActionResult> LocalInventory(string sortOrder)
     {
-
-      ViewData["BarcodeSortParm"] = sortOrder == "Barcode" ? "Barcode_desc" : "Barcode";
-      ViewData["SKUSortParm"] = sortOrder == "SKU" ? "SKU_desc" : "SKU";
-      ViewData["BrandSortParm"] = String.IsNullOrEmpty(sortOrder) ? "brand_desc" : "Brand";
-      ViewData["ProdSortParm"] = String.IsNullOrEmpty(sortOrder) ? "prod_desc" : "Prods";
-      ViewData["SizeSortParm"] = sortOrder == "Size" ? "Size_desc" : "Size";
-      ViewData["LclSortParm"] = sortOrder == "Local Quantity" ? "LCLQTY_desc" : "Local Quantity";
-      ViewData["LclStatSortParm"] = sortOrder == "Local Status" ? "LCLSTS_desc" : "Local Status";
-
-
-
       var products = from p in _context.Products
                      select p;
-      switch (sortOrder)
-      {
-        case "Barcode":
-          products = products.OrderByDescending(p => p.Barcode).Reverse();
-          break;
-        case "Barcode_desc":
-          products = products.OrderByDescending(p => p.Barcode);
-          break;
-        case "SKU":
-          products = products.OrderByDescending(p => p.Sku).Reverse();
-          break;
-        case "SKU_desc":
-          products = products.OrderByDescending(p => p.Sku);
-          break;
-        //check on this again - bug with desc for brand and names
-        case "brand_desc":
-          products = products.OrderByDescending(p => p.BrandId);
-          break;
-        case "Brand":
-          products = products.OrderByDescending(p => p.BrandId).Reverse();
-          break;
-        case "prod_desc":
-          products = products.OrderByDescending(p => p.Pname);
-          break;
-        case "Prods":
-          products = products.OrderByDescending(p => p.Pname).Reverse();
-          break;
-        case "Size":
-          products = products.OrderByDescending(p => p.Size).Reverse();
-          break;
-        case "Size_desc":
-          products = products.OrderByDescending(p => p.Size);
-          break;
-        case "Local Quantity":
-          products = products.OrderByDescending(p => p.LocalQty).Reverse();
-          break;
-        case "LCLQTY_desc":
-          products = products.OrderByDescending(p => p.LocalQty);
-          break;
-        case "LCLSTS_desc":
-          products = products.OrderByDescending(p => p.LocalStatus);
-          break;
-        case "Local Status":
-          products = products.OrderByDescending(p => p.LocalStatus).Reverse();
-          break;
-        default:
-          products = products.OrderBy(p => p.Barcode);
-          break;
-      }
 
-      return View(await products.AsNoTracking().ToListAsync());
+      return View(products);
     }
     [Authorize]
-    public async Task<IActionResult> WarehouseInventory(string sortOrder)
+    public async Task<IActionResult> WarehouseInventory()
     {
-
-      ViewData["BarcodeSortParm"] = sortOrder == "Barcode" ? "Barcode_desc" : "Barcode";
-      ViewData["SKUSortParm"] = sortOrder == "SKU" ? "SKU_desc" : "SKU";
-      ViewData["BrandSortParm"] = String.IsNullOrEmpty(sortOrder) ? "brand_desc" : "Brand";
-      ViewData["ProdSortParm"] = String.IsNullOrEmpty(sortOrder) ? "prod_desc" : "Prods";
-      ViewData["SizeSortParm"] = sortOrder == "Size" ? "Size_desc" : "Size";
-      ViewData["WQSortParm"] = sortOrder == "Warehouse Quantity" ? "WQTY_desc" : "Warehouse Quantity";
-      ViewData["WQStatSortParm"] = sortOrder == "Warehouse Status" ? "WSTS_desc" : "Warehouse Status";
-
       var products = from p in _context.Products
                      select p;
-      switch (sortOrder)
-      {
-        case "Barcode":
-          products = products.OrderByDescending(p => p.Barcode).Reverse();
-          break;
-        case "Barcode_desc":
-          products = products.OrderByDescending(p => p.Barcode);
-          break;
-        case "SKU":
-          products = products.OrderByDescending(p => p.Sku).Reverse();
-          break;
-        case "SKU_desc":
-          products = products.OrderByDescending(p => p.Sku);
-          break;
-        //check on this again - bug with desc for brand and names
-        case "Brand":
-          products = products.OrderByDescending(p => p.BrandId).Reverse();
-          break;
-        case "brand_desc":
-          products = products.OrderByDescending(p => p.BrandId);
-          break;
-        case "prod_desc":
-          products = products.OrderByDescending(p => p.Pname);
-          break;
-        case "Prods":
-          products = products.OrderByDescending(p => p.Pname).Reverse();
-          break;
-        case "Size":
-          products = products.OrderByDescending(p => p.Size).Reverse();
-          break;
-        case "Size_desc":
-          products = products.OrderByDescending(p => p.Size);
-          break;
-        case "Warehouse Quantity":
-          products = products.OrderByDescending(p => p.WarehouseQty).Reverse();
-          break;
-        case "WQTY_desc":
-          products = products.OrderByDescending(p => p.WarehouseQty);
-          break;
-        case "WSTS_desc":
-          products = products.OrderByDescending(p => p.WarehouseStatus);
-          break;
-        case "Warehouse Status":
-          products = products.OrderByDescending(p => p.WarehouseStatus).Reverse();
-          break;
-        default:
-          products = products.OrderBy(p => p.Barcode);
-          break;
-      }
 
-      return View(await products.AsNoTracking().ToListAsync());
+      return View(products);
     }
 
     [Authorize]
