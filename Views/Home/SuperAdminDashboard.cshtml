@@ -1,344 +1,217 @@
+@using Newtonsoft.Json
+@model NAIMS.Models.SuperAdminDashboardViewModel
+
 @{
-    ViewData["Title"] = "Admin Dashboard";
+    ViewData["Title"] = "Super Admin Dashboard";
+    var pastelColors = new[] { "bg-light-blue", "bg-light-pink", "bg-light-green", "bg-light-yellow" };
+    var totalTiles = 0;
 }
 
-<h1>Admin Dashboard</h1>
+<h1>Super Admin Dashboard</h1>
 
-@model List<NAIMS.Models.Employee>
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card h-100 @pastelColors[totalTiles++ % pastelColors.Length]">
+                <div class="card-header">Total Orders This Month</div>
+                <div class="card-body">
+                    <h5 class="card-title">@Model.TotalOrders</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 @pastelColors[totalTiles++ % pastelColors.Length]">
+                <div class="card-header">Total Sales This Month</div>
+                <div class="card-body">
+                    <h5 class="card-title">@Model.TotalSales.ToString("0.000") BHD</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 @pastelColors[totalTiles++ % pastelColors.Length]">
+                <div class="card-header">Total Tax Collected This Year</div>
+                <div class="card-body">
+                    <h5 class="card-title">@Model.TotalTax.ToString("0.000") BHD</h5>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="mb-0">Employee Breakdown</h4>
-    <a href="@Url.Action("Create", "Employees")" class="btn btn-primary">
-        Add Employee
-    </a>
-</div>
-<hr />
-<div class="row">
-    <div class="col-md-12">
-        <h5>Managers</h5>
-        @if (Model.Any(e => e.ERole == "Manager"))
-        {
-            <div class="row">
-                @foreach (var employee in Model.Where(e => e.ERole == "Manager"))
-                {
-                    @if (Model.Where(e => e.ERole == "Manager").Count() <= 2)
-                    {
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h5>@employee.EFirstname @employee.ELastname</h5>
-                                        </div>
-                                        <div class="d-flex justify-content-end align-items-end gap-2">
-                                            <a href="@Url.Action("Details", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-dark">
-                                                View All Details
-                                            </a>
-                                            <a href="@Url.Action("Edit", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-primary">
-                                                Manage
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <p>
-                                        Role: @employee.ERole
-                                    </p>
-                                    <p>
-                                        Email: @employee.EEmail
-                                    </p>
-                                    <p>Target: @employee.ETarget</p>
-                                    <p>
-                                        Commission Rate: @employee.EComissionPerc %
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="col-md-4">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h5>@employee.EFirstname @employee.ELastname</h5>
-                                        </div>
-                                        <div class="d-flex justify-content-end align-items-end gap-2">
-                                            <a href="@Url.Action("Details", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-dark">
-                                                View All Details
-                                            </a>
-                                            <a href="@Url.Action("Edit", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-primary">
-                                                Manage
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <p>
-                                        Role: @employee.ERole
-                                    </p>
-                                    <p>
-                                        Email: @employee.EEmail
-                                    </p>
-                                    <p>Target: @employee.ETarget</p>
-                                    <p>
-                                        Commission Rate: @employee.EComissionPerc %
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                }
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">Monthly Sales Overview</div>
+                <div class="card-body">
+                    <div id="monthlyOverviewChart"></div>
+                </div>
             </div>
-        }
-        else
-        {
-            <div>No users found</div>
-        }
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">Sales Forecast</div>
+                <div class="card-body">
+                    <div id="salesForecastChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card h-100">
+                <div class="card-header">Employee Performance</div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Employee Name</th>
+                                <th>Sales</th>
+                                <th>Target</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var performance in Model.EmployeePerformances)
+                            {
+                                <tr>
+                                    <td>@performance.EmployeeName</td>
+                                    <td>@performance.Sales.ToString("0.000") BHD</td>
+                                    <td>@performance.Target.ToString("0.000") BHD</td>
+                                    <td>
+                                        @if (performance.HasReachedTarget)
+                                        {
+                                            <span class="badge bg-success">Reached</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Not Reached</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-<br />
-<div class="row">
-    <div class="col-md-12">
-        <h5>
-            Sales Representatives
-        </h5>
-        @if (Model.Any(e => e.ERole == "Sales"))
-        {
-            <div class="row">
-                @foreach (var employee in Model.Where(e => e.ERole == "Sales"))
-                {
-                    @if (Model.Where(e => e.ERole == "Sales").Count() <= 2)
-                    {
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h5>@employee.EFirstname @employee.ELastname</h5>
-                                        </div>
-                                        <div class="d-flex justify-content-end align-items-end gap-2">
-                                            <a href="@Url.Action("Details", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-dark">
-                                                View All Details
-                                            </a>
-                                            <a href="@Url.Action("Edit", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-primary">
-                                                Manage
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <p>
-                                        Role: @employee.ERole
-                                    </p>
-                                    <p>
-                                        Email: @employee.EEmail
-                                    </p>
-                                    <p>Target: @employee.ETarget</p>
-                                    <p>
-                                        Commission Rate: @employee.EComissionPerc %
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var monthlyOverviewOptions = {
+                chart: {
+                    type: 'area',
+                    height: 350,
+                    toolbar: { show: false }
+                },
+                dataLabels: { enabled: false },
+                stroke: { curve: 'smooth' },
+                series: [{
+                    name: 'Total Sales (BHD)',
+                    data: @Html.Raw(JsonConvert.SerializeObject(Model.MonthlyOverviews.Select(m => m.TotalSales).ToList()))
+                        }],
+                xaxis: {
+                    categories: @Html.Raw(JsonConvert.SerializeObject(Model.MonthlyOverviews.Select(m => m.Month).ToList())),
+                    title: {
+                        text: 'Month'
                     }
-                    else
-                    {
-                        <div class="col-md-4">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h5>@employee.EFirstname @employee.ELastname</h5>
-                                        </div>
-                                        <div class="d-flex justify-content-end align-items-end gap-2">
-                                            <a href="@Url.Action("Details", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-dark">
-                                                View All Details
-                                            </a>
-                                            <a href="@Url.Action("Edit", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-primary">
-                                                Manage
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <p>
-                                        Role: @employee.ERole
-                                    </p>
-                                    <p>
-                                        Email: @employee.EEmail
-                                    </p>
-                                    <p>Target: @employee.ETarget</p>
-                                    <p>
-                                        Commission Rate: @employee.EComissionPerc %
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                },
+                yaxis: {
+                    title: {
+                        text: 'Total Sales (BHD)'
                     }
-                }
-            </div>
-        }
-        else
-        {
-            <div>No users found</div>
-        }
-    </div>
-</div>
-<br />
-<div class="row">
-    <div class="col-md-12">
-        <h5>Administrators</h5>
-        @if (Model.Any(e => e.ERole == "SuperAdmin"))
-        {
-            <div class="row">
-                @foreach (var employee in Model.Where(e => e.ERole == "SuperAdmin"))
-                {
-                    @if (Model.Where(e => e.ERole == "SuperAdmin").Count() <= 2)
-                    {
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h5>@employee.EFirstname @employee.ELastname</h5>
-                                        </div>
-                                        <div class="d-flex justify-content-end align-items-end gap-2">
-                                            <a href="@Url.Action("Details", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-dark">
-                                                View All Details
-                                            </a>
-                                            <a href="@Url.Action("Edit", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-primary">
-                                                Manage
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <p>
-                                        Role: @employee.ERole
-                                    </p>
-                                    <p>
-                                        Email: @employee.EEmail
-                                    </p>
-                                    <p>Target: @employee.ETarget</p>
-                                    <p>
-                                        Commission Rate: @employee.EComissionPerc %
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.7,
+                        opacityTo: 0.9,
+                        stops: [0, 90, 100]
                     }
-                    else
-                    {
-                        <div class="col-md-4">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h5>@employee.EFirstname @employee.ELastname</h5>
-                                        </div>
-                                        <div class="d-flex justify-content-end align-items-end gap-2">
-                                            <a href="@Url.Action("Details", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-dark">
-                                                View All Details
-                                            </a>
-                                            <a href="@Url.Action("Edit", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-primary">
-                                                Manage
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <p>
-                                        Role: @employee.ERole
-                                    </p>
-                                    <p>
-                                        Email: @employee.EEmail
-                                    </p>
-                                    <p>Target: @employee.ETarget</p>
-                                    <p>
-                                        Commission Rate: @employee.EComissionPerc %
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                },
+                tooltip: { y: { formatter: val => val + " BHD" } }
+            };
+            var monthlyOverviewChart = new ApexCharts(document.querySelector("#monthlyOverviewChart"), monthlyOverviewOptions);
+            monthlyOverviewChart.render();
+
+            var salesForecastOptions = {
+                chart: {
+                    type: 'area',
+                    height: 350,
+                    toolbar: { show: false }
+                },
+                dataLabels: { enabled: false },
+                stroke: { curve: 'smooth' },
+                series: [{
+                    name: 'Predicted Sales (BHD)',
+                    data: @Html.Raw(JsonConvert.SerializeObject(Model.ASalesForecasts.Select(f => f.PredictedSales).ToList()))
+                        }],
+                xaxis: {
+                    categories: @Html.Raw(JsonConvert.SerializeObject(Model.ASalesForecasts.Select(f => f.Month).ToList())),
+                    title: {
+                        text: 'Month'
                     }
-                }
-            </div>
-        }
-        else
-        {
-            <div>No users found</div>
-        }
-    </div>
-</div>
-<br />
-<div class="row">
-    <div class="col-md-12">
-        <h5>Others</h5>
-        @if (Model.Any(e => e.ERole == "Viewer"))
-        {
-            <div class="row">
-                @foreach (var employee in Model.Where(e => e.ERole == "Viewer"))
-                {
-                    @if (Model.Where(e => e.ERole == "Viewer").Count() <= 2)
-                    {
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h5>@employee.EFirstname @employee.ELastname</h5>
-                                        </div>
-                                        <div class="d-flex justify-content-end align-items-end gap-2">
-                                            <a href="@Url.Action("Details", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-dark">
-                                                View All Details
-                                            </a>
-                                            <a href="@Url.Action("Edit", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-primary">
-                                                Manage
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <p>
-                                        Role: @employee.ERole
-                                    </p>
-                                    <p>
-                                        Email: @employee.EEmail
-                                    </p>
-                                    <p>Target: @employee.ETarget</p>
-                                    <p>
-                                        Commission Rate: @employee.EComissionPerc %
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                },
+                yaxis: {
+                    title: {
+                        text: 'Predicted Sales (BHD)'
                     }
-                    else
-                    {
-                        <div class="col-md-4">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h5>@employee.EFirstname @employee.ELastname</h5>
-                                        </div>
-                                        <div class="d-flex justify-content-end align-items-end gap-2">
-                                            <a href="@Url.Action("Details", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-dark">
-                                                View All Details
-                                            </a>
-                                            <a href="@Url.Action("Edit", "Employees", new { id = employee.EmployeeId })" class="btn btn-sm btn-primary">
-                                                Manage
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <p>
-                                        Role: @employee.ERole
-                                    </p>
-                                    <p>
-                                        Email: @employee.EEmail
-                                    </p>
-                                    <p>Target: @employee.ETarget</p>
-                                    <p>
-                                        Commission Rate: @employee.EComissionPerc %
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.7,
+                        opacityTo: 0.9,
+                        stops: [0, 90, 100]
                     }
-                }
-            </div>
-        }
-        else
-        {
-            <div>No users found</div>
-        }
-    </div>
-</div>
+                },
+                tooltip: { y: { formatter: val => val + " BHD" } }
+            };
+            var salesForecastChart = new ApexCharts(document.querySelector("#salesForecastChart"), salesForecastOptions);
+            salesForecastChart.render();
+        });
+    </script>
+}
+
+<style>
+    .bg-light-blue {
+        background-color: #cce5ff;
+        color: #004085;
+    }
+
+    .bg-light-pink {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .bg-light-green {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .bg-light-yellow {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #4d4d4d;
+    }
+
+    .card-text {
+        font-size: 1.5rem;
+        color: #4d4d4d;
+    }
+
+    .badge {
+        font-size: 1rem;
+        padding: 0.5em 1em;
+    }
+</style>

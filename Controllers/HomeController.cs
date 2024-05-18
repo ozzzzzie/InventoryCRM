@@ -41,11 +41,130 @@ public class HomeController : Controller
     }
   }
 
-  public IActionResult SuperAdminDashboard()
+  public async Task<IActionResult> SuperAdminDashboard()
   {
-    var employees = _context.Employees.ToList();
+    var currentMonth = DateTime.Now.Month;
+    var currentYear = DateTime.Now.Year;
 
-    return View(employees);
+    var ordersThisMonth = await _context.Orders
+        .Include(o => o.ProductsOrders)
+        .ThenInclude(po => po.Product)
+        .Where(o => o.OrderDate.Year == currentYear && o.OrderDate.Month == currentMonth)
+        .ToListAsync();
+
+    var totalOrdersThisMonth = ordersThisMonth.Count;
+    var totalSalesThisMonth = ordersThisMonth.Sum(o => o.ProductsOrders.Sum(po => po.Qty * po.Product.Price));
+    var totalTaxThisYear = await CalculateTotalTaxThisYear(currentYear);
+
+    var pastYearData = await GetMonthlyOverviewForPastYear();
+    var aSalesForecast = await GenerateASalesForecast();
+    var employeePerformances = await GetAEmployeePerformances();
+
+    var viewModel = new SuperAdminDashboardViewModel
+    {
+      TotalOrders = totalOrdersThisMonth,
+      TotalSales = (decimal)totalSalesThisMonth,
+      TotalTax = totalTaxThisYear,
+      MonthlyOverviews = pastYearData,
+      ASalesForecasts = aSalesForecast,
+      EmployeePerformances = employeePerformances
+    };
+
+    return View(viewModel);
+  }
+
+  private async Task<decimal> CalculateTotalTaxThisYear(int currentYear)
+  {
+    var ordersThisYear = await _context.Orders
+        .Include(o => o.ProductsOrders)
+        .ThenInclude(po => po.Product)
+        .Where(o => o.OrderDate.Year == currentYear)
+        .ToListAsync();
+
+    var totalTaxThisYear = ordersThisYear.Sum(o => o.ProductsOrders.Sum(po => po.Qty * (int)po.Product.Price * 0.1m));
+
+    return totalTaxThisYear;
+  }
+
+  private async Task<List<AMonthlyOverview>> GetMonthlyOverviewForPastYear()
+  {
+    var currentDate = DateTime.Now;
+    var pastYearDate = currentDate.AddYears(-1);
+
+    var pastYearOrders = await _context.Orders
+        .Include(o => o.ProductsOrders)
+        .ThenInclude(po => po.Product)
+        .Where(o => (o.OrderDate.Year > pastYearDate.Year) ||
+                    (o.OrderDate.Year == pastYearDate.Year && o.OrderDate.Month > pastYearDate.Month) ||
+                    (o.OrderDate.Year == pastYearDate.Year && o.OrderDate.Month == pastYearDate.Month && o.OrderDate.Day >= pastYearDate.Day))
+        .ToListAsync();
+
+    var groupedData = pastYearOrders
+        .GroupBy(o => new { o.OrderDate.Year, o.OrderDate.Month })
+        .Select(g => new AMonthlyOverview
+        {
+          Month = g.Key.Year + "-" + g.Key.Month,
+          Orders = g.Count(),
+          TotalSales = (decimal)g.Sum(o => o.ProductsOrders.Sum(po => po.Qty * po.Product.Price))
+        })
+        .OrderBy(m => m.Month)
+        .ToList();
+
+    return groupedData;
+  }
+
+  private async Task<List<ASalesForecast>> GenerateASalesForecast()
+  {
+    var currentDate = DateTime.Now;
+    var pastYearDate = currentDate.AddYears(-1);
+
+    var orders = await _context.Orders
+        .Include(o => o.ProductsOrders)
+        .ThenInclude(po => po.Product)
+        .Where(o => (o.OrderDate.Year > pastYearDate.Year) ||
+                    (o.OrderDate.Year == pastYearDate.Year && o.OrderDate.Month > pastYearDate.Month) ||
+                    (o.OrderDate.Year == pastYearDate.Year && o.OrderDate.Month == pastYearDate.Month && o.OrderDate.Day >= pastYearDate.Day))
+        .ToListAsync();
+
+    var forecastData = orders
+        .GroupBy(o => new { o.OrderDate.Year, o.OrderDate.Month })
+        .Select(g => new ASalesForecast
+        {
+          Month = g.Key.Year + "-" + g.Key.Month,
+          PredictedSales = (decimal)g.Sum(o => o.ProductsOrders.Sum(po => po.Qty * po.Product.Price))
+        })
+        .OrderBy(f => f.Month)
+        .ToList();
+
+    return forecastData;
+  }
+
+  private async Task<List<AEmployeePerformance>> GetAEmployeePerformances()
+  {
+    var employees = await _context.Employees.ToListAsync();
+    var employeePerformances = new List<AEmployeePerformance>();
+
+    foreach (var employee in employees)
+    {
+      var orders = await _context.Orders
+          .Include(o => o.ProductsOrders)
+          .ThenInclude(po => po.Product)
+          .Where(o => o.EmployeeId == employee.EmployeeId && o.OrderDate.Year == DateTime.Now.Year)
+          .ToListAsync();
+
+      var totalSales = orders.Sum(o => o.ProductsOrders.Sum(po => po.Qty * po.Product.Price));
+      var hasReachedTarget = totalSales >= employee.ETarget;
+
+      employeePerformances.Add(new AEmployeePerformance
+      {
+        EmployeeName = $"{employee.EFirstname} {employee.ELastname}",
+        Sales = (decimal)totalSales,
+        Target = employee.ETarget,
+        HasReachedTarget = hasReachedTarget
+      });
+    }
+
+    return employeePerformances;
   }
 
   public async Task<IActionResult> ManagerDashboard()

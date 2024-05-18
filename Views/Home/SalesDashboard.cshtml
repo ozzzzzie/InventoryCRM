@@ -1,140 +1,129 @@
 @model NAIMS.Models.SalesRepDashboardViewModel
+@using Newtonsoft.Json
 
 @{
     ViewData["Title"] = "Sales Dashboard";
+    var pastelColors = new[] { "bg-light-blue", "bg-light-pink", "bg-light-green", "bg-light-yellow" };
+    var totalTiles = 0;
 }
 
-<h1 class="text-center">Sales Dashboard</h1>
-<br />
-<div class="row mb-4 d-flex justify-content-center">
-    <div class="col-md-4 d-flex">
-        <div class="card mb-3 w-100" style="background-color: #FFCCCB;">
-            <div class="card-header" style="color: #4d4d4d;">
-                Orders This Month
-            </div>
-            <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                <h5 class="card-title" style="color: #4d4d4d;">Orders This Month</h5>
-                <p class="card-text display-4" style="color: #4d4d4d;">@Model.OrdersThisMonth</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4 d-flex">
-        <div class="card mb-3 w-100" style="background-color: #BDE0FE;">
-            <div class="card-header" style="color: #4d4d4d;">
-                Predicted Commission
-            </div>
-            <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                <h5 class="card-title" style="color: #4d4d4d;">Predicted Commission</h5>
-                <p class="card-text display-4" style="color: #4d4d4d;">@Model.PredictedCommission.ToString("0.000 BHD")</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4 d-flex">
-        <div class="card mb-3 w-100" style="background-color: #FFFFCC;">
-            <div class="card-header" style="color: #4d4d4d;">
-                Monthly Target
-            </div>
-            <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                <h5 class="card-title" style="color: #4d4d4d;">Monthly Target</h5>
-                <p class="card-text display-4" style="color: #4d4d4d;">@Model.MonthlyTarget.ToString("0.000 BHD")</p>
-                <div class="progress w-100">
-                    <div class="progress-bar" role="progressbar" style="width: @(Math.Max(0, (Model.TotalSalesThisMonth / Model.MonthlyTarget * 100)))%" aria-valuenow="@(Math.Max(0, (Model.TotalSalesThisMonth / Model.MonthlyTarget * 100)))" aria-valuemin="0" aria-valuemax="100">@Math.Max(0, (Model.TotalSalesThisMonth / Model.MonthlyTarget * 100)).ToString("0.0")%</div>
+<div class="container">
+    <h1 class="my-4">Sales Dashboard</h1>
+
+    <div class="row">
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 @pastelColors[totalTiles++ % pastelColors.Length]">
+                <div class="card-body">
+                    <h5 class="card-title">Orders This Month</h5>
+                    <p class="card-text">@Model.OrdersThisMonth</p>
                 </div>
-                <p class="card-text mt-2" style="color: #4d4d4d;">@Model.EncouragingMessage</p>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 @pastelColors[totalTiles++ % pastelColors.Length]">
+                <div class="card-body">
+                    <h5 class="card-title">Predicted Commission</h5>
+                    <p class="card-text">@Model.PredictedCommission.ToString("0.000") BHD</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 @pastelColors[totalTiles++ % pastelColors.Length]">
+                <div class="card-body">
+                    <h5 class="card-title">Target Achievement</h5>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped bg-dark" role="progressbar" style="width: @(Math.Min(Model.TotalSalesThisMonth / Model.MonthlyTarget * 100, 100))%" aria-valuenow="@(Math.Min(Model.TotalSalesThisMonth / Model.MonthlyTarget * 100, 100))" aria-valuemin="0" aria-valuemax="100">
+                            @((Model.TotalSalesThisMonth / Model.MonthlyTarget * 100).ToString("0.0"))%
+                        </div>
+                    </div><br />
+
+                    <strong>@Model.EncouragingMessage</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    Monthly Sales Overview
+                </div>
+                <div class="card-body">
+                    <div id="sales-overview-chart"></div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="card mb-3">
-    <div class="card-header">
-        Your Monthly Sales Overview (Past Year)
-    </div>
-    <div class="card-body">
-        <canvas id="monthlySalesChart" style="height: 300px;"></canvas>
-    </div>
-</div>
-
-<!-- Chart.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Gradient fill for the line chart
-        var ctx = document.getElementById('monthlySalesChart').getContext('2d');
-        var gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, 'rgba(54, 162, 235, 0.5)');
-        gradient.addColorStop(1, 'rgba(54, 162, 235, 0)');
-
-        var monthlySalesChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: @Html.Raw(Json.Serialize(Model.MonthlyOverviews.Select(m => m.Month))),
-                datasets: [{
-                    label: 'Total Sales (BHD)',
-                    data: @Html.Raw(Json.Serialize(Model.MonthlyOverviews.Select(m => m.TotalSales))),
-                    backgroundColor: gradient,
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: 'rgba(54, 162, 235, 1)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(54, 162, 235, 1)',
-                }]
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        // Monthly Sales Overview Chart
+        var salesOverviewOptions = {
+            chart: {
+                type: 'area',
+                height: 350,
+                toolbar: { show: false }
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        beginAtZero: true
+            dataLabels: { enabled: false },
+            stroke: { curve: 'smooth' },
+            series: [{
+                name: 'Total Sales',
+                data: @Html.Raw(JsonConvert.SerializeObject(Model.MonthlyOverviews.Select(m => m.TotalSales).ToList()))
+                    }],
+            xaxis: {
+                categories: @Html.Raw(JsonConvert.SerializeObject(Model.MonthlyOverviews.Select(m => m.Month).ToList()))
                     },
-                    y: {
-                        beginAtZero: true
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top',
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                    }
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.7,
+                    opacityTo: 0.9,
+                    stops: [0, 90, 100]
                 }
-            }
-        });
-    });
-</script>
+            },
+            tooltip: { y: { formatter: val => val + " BHD" } }
+        };
+        var salesOverviewChart = new ApexCharts(document.querySelector("#sales-overview-chart"), salesOverviewOptions);
+        salesOverviewChart.render();
+    </script>
+}
 
 <style>
+    .bg-light-blue {
+        background-color: #cce5ff;
+        color: #004085;
+    }
+
+    .bg-light-pink {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .bg-light-green {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .bg-light-yellow {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
     .card-title {
         font-size: 1.25rem;
-    }
-
-    .card-text.display-4 {
-        font-size: 2.5rem;
         font-weight: bold;
     }
 
-    .card-body {
-        padding: 1rem;
+    .card-text {
+        font-size: 1.5rem;
     }
 
-    .card {
-        margin-bottom: 1rem;
-    }
-
-    .card-header {
-        font-size: 1.25rem;
-        font-weight: bold;
-        color: #4d4d4d;
-    }
-
-    .progress-bar {
-        background-color: #28a745;
+    .badge {
+        font-size: 1rem;
+        padding: 0.5em 1em;
     }
 </style>
