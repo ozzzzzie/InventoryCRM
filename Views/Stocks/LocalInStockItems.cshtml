@@ -1,16 +1,18 @@
 @model IEnumerable<NAIMS.Models.Product>
 
 @{
-    ViewData["Title"] = "In Stock Items";
+    ViewData["Title"] = "In Stock Items"; // set the page title
 }
 
 <a asp-controller="Products" asp-action="Localinventory" type="button" class="btn btn-dark">
     <i class="tf-icons bx bx-arrow-back"></i> Back
-</a><br /><br />
-<h2 align="middle">In Stock Items</h2>
+</a>
+<br />
+<br /> // back button to navigate to local inventory
+<h2 align="middle">In Stock Items</h2> // heading for the page
 <p align=right>
     <button onclick="printDifferentPage()" class="btn btn-dark">Print</button>
-</p>
+</p> // print button
 
 @* Local In stock *@
 <div class="col-md-6 col-xl-12">
@@ -41,6 +43,7 @@
                                     <td>@product.Size</td>
                                     <td>@product.LocalQty</td>
                                 </tr>
+                                // display each product that is in stock
                             }
                         }
                     </tbody>
@@ -50,13 +53,11 @@
     </div>
 </div>
 
-
 <script>
     function printDifferentPage() {
         var newWindow = window.open('LocalInStockItemsPrint');
         newWindow.onload = function () {
             newWindow.print();
-        };
+        }; // open the print window and print the page
     }
 </script>
-

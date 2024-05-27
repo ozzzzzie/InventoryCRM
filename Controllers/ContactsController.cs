@@ -18,6 +18,8 @@ namespace NAIMS.Controllers
     {
       _context = context;
     }
+
+    //authorisation rule added to ensure that a user is logged in
     [Authorize]
     // GET: Contacts
     public async Task<IActionResult> Index()
@@ -28,6 +30,7 @@ namespace NAIMS.Controllers
     [Authorize]
     public async Task<IActionResult> Salons()
     {
+      //getting all salons
       var salons = await _context.Contacts.Where(c => c.Ctype == "Salon").ToListAsync();
       return View(salons);
     }
@@ -35,6 +38,7 @@ namespace NAIMS.Controllers
     [Authorize]
     public async Task<IActionResult> Influencers()
     {
+      //getting all influencers
       var influencers = await _context.Contacts.Where(c => c.Ctype == "Influencer").ToListAsync();
       return View(influencers);
     }
@@ -57,6 +61,9 @@ namespace NAIMS.Controllers
 
       return View(contact);
     }
+
+    //authorisation rule added to ensure that a user is logged into SuperAdmin or Manager accounts before they can create an influencer/salon
+
     [Authorize(Roles = "SuperAdmin,Manager")]
     // GET: Contacts/Create
     public IActionResult Create()

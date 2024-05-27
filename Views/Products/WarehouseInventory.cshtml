@@ -1,43 +1,47 @@
 @model IEnumerable<NAIMS.Models.Product>
 
-
 @{
-    ViewData["Title"] = "Warehouse Inventory";
+    ViewData["Title"] = "Warehouse Inventory"; // set the page title
 }
 
 <style>
     .table-responsive.text-nowrap table {
         font-size: 14px;
+        // set the font size for the table
     }
 
     .pagination {
         display: flex;
         justify-content: center;
+        // center the pagination
     }
 
     .page-item {
         margin: 0 5px;
+        // set margin for pagination items
     }
 
     .sortable {
         cursor: pointer;
+        // change cursor to pointer for sortable columns
     }
 
         .sortable i {
             margin-left: 5px;
+            // set margin for the sort icons
         }
 </style>
 
-<h1>Warehouse Inventory</h1>
+<h1>Warehouse Inventory</h1> // heading for the page
 
 <div class="d-flex justify-content-end">
     <div class="mr-2">
-        <a asp-controller="Products" asp-action="MovingItems" class="btn btn-dark">Move Products</a>
+        <a asp-controller="Products" asp-action="MovingItems" class="btn btn-dark">Move Products</a> // button to move products
     </div>
     <div class="btn-group" style="padding-left: 10px;">
         <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Stock Reports
-        </button>
+        </button> // dropdown button for stock reports
         <ul class="dropdown-menu">
             <li>
                 <h6 class="dropdown-header text-uppercase">Stock Reports</h6>
@@ -46,7 +50,7 @@
             <li><a asp-controller="Stocks" asp-action="WarehouseOutOfStockItems" class="dropdown-item">Pick Up Needed</a></li>
             <li><a asp-controller="Stocks" asp-action="WarehouseLowStockItems" class="dropdown-item">Low Stock</a></li>
             <li><a asp-controller="Stocks" asp-action="WarehouseInStockItems" class="dropdown-item">In Stock</a></li>
-        </ul>
+        </ul> // dropdown menu items for different stock reports
     </div>
 </div>
 <br />
@@ -56,7 +60,7 @@
         <table class="table table-hover" id="WarehouseTable">
             <thead>
                 <tr>
-                    <!-- Sortable headers with icons for sorting indication -->
+                    <!-- sortable headers with icons for sorting indication -->
                     <th class="sortable" onclick="sortTable(0)">Barcode <i class="bx bx-sort"></i></th>
                     <th class="sortable" onclick="sortTable(1)">Name <i class="bx bx-sort"></i></th>
                     <th class="sortable" onclick="sortTable(2)">Brand <i class="bx bx-sort"></i></th>
@@ -67,7 +71,7 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Display each inventory item -->
+                <!-- display each inventory item -->
                 @foreach (var item in Model)
                 {
                     <tr>
@@ -125,36 +129,38 @@
         </table>
     </div>
 </div>
-
 <br />
 <div class="pagination">
     <ul id="pagination" class="pagination"></ul>
 </div>
+
+<!-- include jQuery library -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
         var table = '#WarehouseTable';
-        var rowsPerPage = 20;  // Number of rows to display per page
+        var rowsPerPage = 20;  // number of rows to display per page
         var rows = $(table + ' tbody tr');
         var rowsCount = rows.length;
         var pageCount = Math.ceil(rowsCount / rowsPerPage);
         var numbers = $('#pagination');
 
+        // function to update table to show rows for the current page
         function updateTable(start, end) {
             $(table + ' tbody tr').hide().slice(start, end).show();
         }
 
-        // Generate pagination buttons
+        // generate pagination buttons
         for (var i = 0; i < pageCount; i++) {
             numbers.append('<li class="page-item"><a class="page-link" href="#">' + (i + 1) + '</a></li>');
         }
 
-        // Show first page initially
+        // show the first page of rows initially
         $(table + ' tbody tr').hide();
         $(table + ' tbody tr').slice(0, rowsPerPage).show();
         $('#pagination li:first-child a').addClass('active');
 
-        // Handle pagination click
+        // handle pagination click event
         $('#pagination a').click(function (e) {
             e.preventDefault();
             $('#pagination a').removeClass('active');
@@ -165,11 +171,13 @@
             updateTable(start, end);
         });
     });
+
+    // function to sort the table
     function sortTable(n) {
         var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
         table = document.getElementById("WarehouseTable");
         switching = true;
-        dir = "asc";
+        dir = "asc"; // set the sorting direction to ascending
         while (switching) {
             switching = false;
             rows = table.rows;
@@ -200,9 +208,10 @@
                 }
             }
         }
-        updateSortIcons(n, dir);
+        updateSortIcons(n, dir); // update the sort icons based on the sort direction
     }
 
+    // function to update sort icons
     function updateSortIcons(columnIndex, direction) {
         var headers = document.querySelectorAll(".sortable");
         headers.forEach(function (header, index) {
@@ -219,5 +228,3 @@
         });
     }
 </script>
-
-

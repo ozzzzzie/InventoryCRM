@@ -149,7 +149,7 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
-        // Sales Forecast Chart
+        // sales Forecast Chart
         var salesForecastOptions = {
             chart: {
                 type: 'area',
@@ -179,7 +179,7 @@
         var salesForecastChart = new ApexCharts(document.querySelector("#sales-forecast-chart"), salesForecastOptions);
         salesForecastChart.render();
 
-        // Product Sales Trend Chart
+        // product Sales Trend Chart
         var productSalesTrendChart;
 
         function renderProductSalesTrendChart(productName) {
@@ -216,7 +216,7 @@
             renderProductSalesTrendChart(this.value);
         });
 
-        // Initial render for the first product
+        // initial render for the first product
         renderProductSalesTrendChart(document.getElementById('product-selector').value);
     </script>
 }
