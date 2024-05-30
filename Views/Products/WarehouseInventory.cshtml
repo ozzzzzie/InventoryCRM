@@ -7,28 +7,23 @@
 <style>
     .table-responsive.text-nowrap table {
         font-size: 14px;
-        // set the font size for the table
     }
 
     .pagination {
         display: flex;
         justify-content: center;
-        // center the pagination
     }
 
     .page-item {
         margin: 0 5px;
-        // set margin for pagination items
     }
 
     .sortable {
         cursor: pointer;
-        // change cursor to pointer for sortable columns
     }
 
         .sortable i {
             margin-left: 5px;
-            // set margin for the sort icons
         }
 </style>
 
@@ -36,12 +31,12 @@
 
 <div class="d-flex justify-content-end">
     <div class="mr-2">
-        <a asp-controller="Products" asp-action="MovingItems" class="btn btn-dark">Move Products</a> // button to move products
+        <a asp-controller="Products" asp-action="MovingItems" class="btn btn-dark">Move Products</a> <!--// button to move products-->
     </div>
     <div class="btn-group" style="padding-left: 10px;">
         <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Stock Reports
-        </button> // dropdown button for stock reports
+        </button><!-- // dropdown button for stock reports-->
         <ul class="dropdown-menu">
             <li>
                 <h6 class="dropdown-header text-uppercase">Stock Reports</h6>
@@ -50,7 +45,7 @@
             <li><a asp-controller="Stocks" asp-action="WarehouseOutOfStockItems" class="dropdown-item">Pick Up Needed</a></li>
             <li><a asp-controller="Stocks" asp-action="WarehouseLowStockItems" class="dropdown-item">Low Stock</a></li>
             <li><a asp-controller="Stocks" asp-action="WarehouseInStockItems" class="dropdown-item">In Stock</a></li>
-        </ul> // dropdown menu items for different stock reports
+        </ul> <!--// dropdown menu items for different stock reports-->
     </div>
 </div>
 <br />
